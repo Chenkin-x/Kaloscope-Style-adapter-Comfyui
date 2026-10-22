@@ -1,0 +1,12 @@
+{
+  "artists": 44129,
+  "aliases": 105,
+  "bank_name": "z3_artist_v1_recent.safetensors",
+  "bank_sha256": "22e8bab46f5848f74d643277133fc65d760de2a5961cc51a575d818ee319104a",
+  "encoder_sha256": "c370c49c7a7c1a68b2942b8b3aab080c25384a67c9d652d2005e15c8ab8860dd",
+  "source": "artist-heads v1 newest training-supported year group; one representative per family",
+  "alias_source": "https://danbooru.donmai.us/tag_aliases.json",
+  "alias_source_sha256": "3ff442c730b13d70d1adaa394d4061b9302f39298a35489d3ebcd8f539dfa3b8",
+  "csv_sha256": "9ab7f3ea26100ecb1afd04378f67d5b28650cb1ef8ef5559b1bf4339bd86d2f7",
+  "families_definition": "Unique works used in the recent artist prototype; not all training images."
+}

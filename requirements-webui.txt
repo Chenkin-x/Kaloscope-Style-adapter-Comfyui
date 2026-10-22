@@ -1,0 +1,5 @@
+-r requirements.txt
+gradio>=3.41,<6
+fastapi
+uvicorn
+python-multipart

@@ -1,0 +1,224 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_raw.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Krea2 raw 原版主模型（冻结）"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Qwen3-VL / type krea2"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "krea2_z3_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Krea2 Qwen/Wan VAE"
+    }
+  },
+  "4": {
+    "class_type": "KaloscopeModelLoader",
+    "inputs": {
+      "model_folder": "z3_artist_v1",
+      "device": "cuda"
+    },
+    "_meta": {
+      "title": "Matching Z3 artist encoder"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "kaloscope_z3_reference.png"
+    },
+    "_meta": {
+      "title": "画风参考图（可替换为任意单张作品）"
+    }
+  },
+  "6": {
+    "class_type": "KaloscopeZ3EncodeReference",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "reference_images": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode Z3 reference"
+    }
+  },
+  "7": {
+    "class_type": "KaloscopeZ3Loader",
+    "inputs": {
+      "checkpoint": "z3_step12006.safetensors"
+    },
+    "_meta": {
+      "title": "Choose intermediate checkpoint"
+    }
+  },
+  "8": {
+    "class_type": "KaloscopeZ3Apply",
+    "inputs": {
+      "style_guidance": 5.5,
+      "adapter_strength": 1.0,
+      "model": [
+        "1",
+        0
+      ],
+      "adapter": [
+        "7",
+        0
+      ],
+      "style_features": [
+        "6",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Z3 style guidance 5.5"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "An anime illustration of a girl reading a book by a window, soft afternoon light, potted plants, medium shot.",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "内容提示词（描述希望生成的新图）"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Empty negative (evaluation default)"
+    }
+  },
+  "14": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Euler"
+    }
+  },
+  "15": {
+    "class_type": "KaloscopeZ3Sigmas",
+    "inputs": {
+      "steps": 28,
+      "start_sigma": 1.0,
+      "latent": [
+        "19",
+        0
+      ],
+      "model_variant": "raw"
+    },
+    "_meta": {
+      "title": "纯噪声起步：start sigma=1.0"
+    }
+  },
+  "16": {
+    "class_type": "SamplerCustom",
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 17,
+      "cfg": 2.0,
+      "model": [
+        "8",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "sampler": [
+        "14",
+        0
+      ],
+      "sigmas": [
+        "15",
+        0
+      ],
+      "latent_image": [
+        "19",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Text CFG 2; independent style CFG above"
+    }
+  },
+  "17": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "16",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode result"
+    }
+  },
+  "18": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "KaloscopeZ3/txt2img_reference_step12006",
+      "images": [
+        "17",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Save Z3 test"
+    }
+  },
+  "19": {
+    "class_type": "EmptyHunyuanLatentVideo",
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "length": 1,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "空白图像潜空间（单帧；无需内容图）"
+    }
+  }
+}

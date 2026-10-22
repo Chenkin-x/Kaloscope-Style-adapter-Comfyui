@@ -1,0 +1,32 @@
+.kaloscope-artists {
+    box-sizing: border-box;
+    width: min(760px, calc(100vw - 32px));
+    max-height: min(800px, 90vh);
+    padding: 24px;
+    border: 1px solid #56606f;
+    border-radius: 14px;
+    background: var(--comfy-menu-bg, #20252c);
+    color: var(--fg-color, #eff1f5);
+    font: 14px/1.5 system-ui, sans-serif;
+    box-shadow: 0 24px 80px #0008;
+}
+.kaloscope-artists::backdrop { background: #0008; }
+.kaloscope-artists .ks-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.kaloscope-artists h2 { margin: 0; font-size: 22px; }
+.kaloscope-artists button, .kaloscope-artists input { font: inherit; color: inherit; }
+.kaloscope-artists .ks-close { padding: 6px 12px; border: 1px solid #657084; border-radius: 6px; background: transparent; cursor: pointer; }
+.kaloscope-artists .ks-source { overflow-wrap: anywhere; opacity: .8; }
+.kaloscope-artists .ks-query { box-sizing: border-box; width: 100%; padding: 12px 14px; border: 1px solid #7b8798; border-radius: 8px; background: var(--comfy-input-bg, #141920); }
+.kaloscope-artists :focus-visible { outline: 2px solid #83bbff; outline-offset: 2px; }
+.kaloscope-artists .ks-status { min-height: 24px; margin: 12px 0; }
+.kaloscope-artists .ks-results { max-height: 48vh; overflow-y: auto; display: grid; gap: 7px; }
+.kaloscope-artists .ks-result { text-align: left; width: 100%; display: grid; gap: 3px; padding: 10px 14px; border: 1px solid #505b6b; border-radius: 8px; background: transparent; cursor: pointer; overflow-wrap: anywhere; }
+.kaloscope-artists .ks-result:hover, .kaloscope-artists .ks-result.ks-active { background: #254766; color: #fff; border-color: #81b9ed; }
+.kaloscope-artists .ks-detail, .kaloscope-artists .ks-alias { font-size: 12px; opacity: .85; }
+.kaloscope-artists .ks-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 18px; font-size: 12px; }
+.kaloscope-artists a { color: #8ec5ff; }
+@media (max-width: 520px) {
+    .kaloscope-artists { padding: 16px; }
+    .kaloscope-artists h2 { font-size: 18px; }
+    .kaloscope-artists .ks-header { align-items: flex-start; }
+}

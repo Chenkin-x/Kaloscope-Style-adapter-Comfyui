@@ -1,0 +1,6 @@
+2026-10-22 release validation
+54 backend tests passed (artist search, routes, mixing, checkpoint/model loading, numerical adapter and feature analysis).
+Real ComfyUI browser checks passed: fuzzy ranking, disambiguation, keyboard choice, weighted mix append, CSV download (44129 names), workflow serialize/reload, narrow viewport.
+Raw 63006 and Turbo 28000 fixed-seed PNG pixel hashes exactly match the previous implementation.
+The optional standalone Gradio WebUI suite was not run: Gradio is not installed in the ComfyUI environment.
+No model weights or training images are included in this repository.

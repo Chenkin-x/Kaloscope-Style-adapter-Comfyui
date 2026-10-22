@@ -1,0 +1,158 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_raw.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Krea2 raw 原版主模型（冻结）"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Qwen3-VL / type krea2"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "krea2_z3_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Krea2 Qwen/Wan VAE"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A portrait of a woman surrounded by flowers, decorative botanical border, in the style of Alphonse Mucha.",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "正向提示词：内容 + 艺术家名称"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Empty negative (evaluation default)"
+    }
+  },
+  "14": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Euler"
+    }
+  },
+  "15": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "scheduler": "simple",
+      "steps": 28,
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "完整文生图时间表"
+    }
+  },
+  "16": {
+    "class_type": "SamplerCustom",
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 17,
+      "cfg": 5.5,
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "sampler": [
+        "14",
+        0
+      ],
+      "sigmas": [
+        "15",
+        0
+      ],
+      "latent_image": [
+        "19",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "文本 CFG 5.5（无 Z3 adapter）"
+    }
+  },
+  "17": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "16",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode result"
+    }
+  },
+  "18": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "Krea2/txt2img_artist_text",
+      "images": [
+        "17",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Save Z3 test"
+    }
+  },
+  "19": {
+    "class_type": "EmptyHunyuanLatentVideo",
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "length": 1,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "空白图像潜空间（单帧；无需内容图）"
+    }
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "1": {
+    "class_type": "KaloscopeMOSSBaseLoader",
+    "inputs": {
+      "model_path": "MOSS-Image-Base",
+      "weight_dtype": "bf16",
+      "text_device": "default"
+    },
+    "_meta": {
+      "title": "MOSS Base / 默认底模"
+    }
+  },
+  "2": {
+    "class_type": "KaloscopeZ3Loader",
+    "inputs": {
+      "checkpoint": "moss_z3_step00008500.safetensors"
+    },
+    "_meta": {
+      "title": "MOSS Z3 / 全量8500步"
+    }
+  },
+  "3": {
+    "class_type": "KaloscopeZ3ArtistStyle",
+    "inputs": {
+      "bank": "z3_artist_v1_recent.safetensors",
+      "artist_name": "chahan_(fried_rice0614)"
+    },
+    "_meta": {
+      "title": "艺术家名称 / 查询风格原型"
+    }
+  },
+  "4": {
+    "class_type": "KaloscopeZ3Apply",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "adapter": [
+        "2",
+        0
+      ],
+      "style_features": [
+        "3",
+        0
+      ],
+      "style_guidance": 6.0,
+      "adapter_strength": 1.0
+    },
+    "_meta": {
+      "title": "MOSS Z3 / 含负分支 skip22"
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "An anime illustration of a girl reading a book by a window, soft afternoon light, potted plants, medium shot."
+    },
+    "_meta": {
+      "title": "正向 / 只写画面内容"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "负向 / 留空"
+    }
+  },
+  "7": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "MOSS / Flux2 128通道 latent"
+    }
+  },
+  "8": {
+    "class_type": "KaloscopeMOSSZ3Sigmas",
+    "inputs": {
+      "steps": 50,
+      "shift": 5.0
+    },
+    "_meta": {
+      "title": "MOSS训练评估时间表 / shift=5"
+    }
+  },
+  "14": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Euler"
+    }
+  },
+  "9": {
+    "class_type": "SamplerCustom",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "6",
+        0
+      ],
+      "latent_image": [
+        "7",
+        0
+      ],
+      "add_noise": true,
+      "noise_seed": 17,
+      "cfg": 3.0,
+      "sampler": [
+        "14",
+        0
+      ],
+      "sigmas": [
+        "8",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "文本 CFG=3 / 风格 CFG 在 Apply"
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "MOSS VAE Decode"
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "KaloscopeMOSS/artist_name_step8500"
+    },
+    "_meta": {
+      "title": "保存风格结果"
+    }
+  }
+}
