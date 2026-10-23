@@ -1,20 +1,22 @@
 # Kaloscope Style Adapter for ComfyUI
 
 Krea2 Raw / Turbo 与 MOSS 风格适配节点，支持画师名称、加权多画师和参考图条件。
-**2.0.0：独立生图节点包**，保留原有 `KaloscopeZ3*` 节点 ID 与工作流接口。基于 [comfyui-kaloscope](https://github.com/spawner1145/comfyui-kaloscope) 整理。
+如需使用艺术家风格图像反推节点，请使用： [comfyui-kaloscope](https://github.com/spawner1145/comfyui-kaloscope)。
 
-## 与 comfyui-kaloscope 的关系
+## 训练代码
 
-本项目从此前基于 [spawner1145/comfyui-kaloscope](https://github.com/spawner1145/comfyui-kaloscope) 的合并扩展版中拆出，是**独立维护的风格生成扩展**，不代表原项目的官方更新。沿用原项目的模型目录和接口，并保留所复用代码的来源与许可；后续生图功能与问题在本仓库维护。
+适配器训练实现见 [Kaloscope Adapter Trainer](https://github.com/Chenkin-x/Kaloscope-adapter-trainer)，训练配置与运行方式请参考该仓库 README。
 
-| 项目 | 主要职责 | 安装关系 |
-| --- | --- | --- |
-| `spawner1145/comfyui-kaloscope` | 画师名称反推、特征提取、相似度与分析 | 有反推或分析需求时安装 |
-| 本项目 `Kaloscope-Style-adapter-Comfyui` | Krea2 Raw / Turbo、MOSS 的 adapter 风格生图 | 可单独安装，也可与原版并存 |
+本项目的三个入口：
 
-新包不包含 LSNet 或画师分类/聚类节点，只保留参考图生图必需的 DINOv3 编码实现。两个包共享 `models/kaloscope/<目录>/` 中训练匹配的 v1 权重，无需重复下载；原加载器的 `KALOSCOPE_MODEL` 输出也能直接连接本包参考图节点。纯名称生图使用风格原型库，无需运行 DINO。
+| 仓库 | 用途 |
+| --- | --- |
+| [模型权重与模型卡](https://huggingface.co/heathcliff01/Kaloscope-style-adapter) | 下载 Raw、Turbo、MOSS 适配器、配套风格资源与示例工作流 |
+| [训练代码](https://github.com/Chenkin-x/Kaloscope-adapter-trainer) | 研究与扩展适配器训练流程 |
+| [ComfyUI 推理节点](https://github.com/Chenkin-x/Kaloscope-Style-adapter-Comfyui) | 使用画师名称、多画师融合或参考图进行风格生成 |
 
-此前同时包含反推和 adapter 的**合并扩展版**需要按[迁移说明](docs/MIGRATION_ZH.md)去除重复注册。来源及许可边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)，拆分后的测试证据见[验证记录](docs/VALIDATION_ZH.md)。
+希望直接体验生成效果，可以使用已发布模型与本仓库的推理节点；希望训练或扩展适配器，请查看训练代码仓库。模型、代码及其依赖分别适用对应的许可条款。
+
 
 ## 模型下载与效果展示
 
@@ -92,7 +94,7 @@ ComfyUI/models/
 
 Krea2底模和文本继续使用原生 `UNETLoader` / `CLIPLoader(type=krea2)`；采样、解码、保存复用通用节点。`KaloscopeZ3Sigmas`保留Raw分辨率调度与Turbo固定μ=1.15。
 
-MOSS新示例直接使用官方插件 `MOSSImageHFLoader`，将路径改为本机MOSS-Image-Base目录。旧`KaloscopeMOSSBaseLoader`继续兼容已有工作流。当前验证环境的HF插件与更新版ComfyUI内置MOSS后端接口不同，尚未验证该adapter在后者上的补丁与数值等价性，不能只替换成UNETLoader就视为兼容。参考[官方MOSS接口说明](https://github.com/OpenMOSS/MOSS-Image/blob/main/comfyui/README.md)与[官方Krea2 VAE说明](https://github.com/Comfy-Org/docs/blob/main/tutorials/image/krea/krea-2.mdx)。
+MOSS直接使用官方插件 `MOSSImageHFLoader`，将路径改为本机MOSS-Image-Base目录。参考[官方MOSS接口说明](https://github.com/OpenMOSS/MOSS-Image/blob/main/comfyui/README.md)与[官方Krea2 VAE说明](https://github.com/Comfy-Org/docs/blob/main/tutorials/image/krea/krea-2.mdx)。
 
 ## 画师快速检索
 
