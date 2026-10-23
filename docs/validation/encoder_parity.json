@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "folder": "z3_artist_v1",
+      "folder": "artist-v1",
       "checkpoint_sha256": "b06d71ba6d655aae035dfb5dc4a32dde4fd0aba00bf553facedd654d8e2e5a64",
       "images": 2,
       "input_shape": [
@@ -16,7 +16,7 @@
       "new_has_classifier": false,
       "max_abs_error": 0.0,
       "bitwise_equal": true,
-      "seconds": 7.154
+      "seconds": 7.497
     },
     {
       "folder": "v1-artist-classifier",
@@ -34,7 +34,7 @@
       "new_has_classifier": false,
       "max_abs_error": 0.0,
       "bitwise_equal": true,
-      "seconds": 6.183
+      "seconds": 5.962
     }
   ],
   "style_only_vs_shared_classifier_bitwise_equal": true,

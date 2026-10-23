@@ -31,9 +31,12 @@ class StandaloneTests(unittest.TestCase):
                 self.assertEqual(sys.path, old_path)
                 mapping = module.NODE_CLASS_MAPPINGS
                 self.assertEqual(len(mapping), 10)
+                self.assertNotRegex(str(mapping.keys()) + str(module.NODE_DISPLAY_NAME_MAPPINGS), r'(?i)z3')
+                for cls in mapping.values():
+                    self.assertNotRegex(str(cls.INPUT_TYPES()) + str(cls.RETURN_TYPES), r'(?i)z3')
                 self.assertNotIn('KaloscopeModelLoader', mapping)
-                self.assertEqual(mapping['KaloscopeZ3EncoderLoader'].RETURN_TYPES, ('KALOSCOPE_MODEL',))
-                self.assertEqual(mapping['KaloscopeZ3EncodeReference'].INPUT_TYPES()['required']['model'][0], 'KALOSCOPE_MODEL')
+                self.assertEqual(mapping['KaloscopeStyleEncoderLoader'].RETURN_TYPES, ('KALOSCOPE_MODEL',))
+                self.assertEqual(mapping['KaloscopeStyleEncodeReference'].INPUT_TYPES()['required']['model'][0], 'KALOSCOPE_MODEL')
                 self.assertFalse(any(k.startswith(name + '.kaloscope_style._vendor') for k in sys.modules))
                 self.assertTrue(all(r.path.startswith('/kaloscope-adapter/') for r in routes))
         finally:
@@ -43,9 +46,9 @@ class StandaloneTests(unittest.TestCase):
 
     def test_migrate_style_only_api_preserves_mixed_analysis_graph(self):
         graph = {'1': {'class_type': 'KaloscopeModelLoader', 'inputs': {'model_folder': 'shared_v1', 'device': 'auto'}},
-                 '2': {'class_type': 'KaloscopeZ3EncodeReference', 'inputs': {'model': ['1', 0]}}}
+                 '2': {'class_type': 'KaloscopeStyleEncodeReference', 'inputs': {'model': ['1', 0]}}}
         migrated = migrate_workflow(graph)
-        self.assertEqual(migrated['1']['class_type'], 'KaloscopeZ3EncoderLoader')
+        self.assertEqual(migrated['1']['class_type'], 'KaloscopeStyleEncoderLoader')
         self.assertEqual(migrated['1']['inputs'], graph['1']['inputs'])
         self.assertEqual(graph['1']['class_type'], 'KaloscopeModelLoader')
         graph['3'] = {'class_type': 'KaloscopeInference', 'inputs': {'model': ['1', 0]}}

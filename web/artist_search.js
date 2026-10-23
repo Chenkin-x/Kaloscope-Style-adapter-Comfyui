@@ -1,7 +1,7 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const NODE_INPUTS = { KaloscopeZ3ArtistStyle: "artist_name", KaloscopeZ3ArtistMix: "artist_tags" };
+const NODE_INPUTS = { KaloscopeStyleArtist: "artist_name", KaloscopeStyleArtistMix: "artist_tags" };
 const MATCH_LABELS = { exact: "精确 / Exact", prefix: "前缀 / Prefix", substring: "包含 / Contains", fuzzy: "近似拼写 / Fuzzy", browse: "" };
 
 function element(tag, className, text) {

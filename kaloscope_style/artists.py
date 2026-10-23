@@ -1,4 +1,4 @@
-"""Named artist prototypes in the frozen Z3 256-D projector space."""
+"""Named artist prototypes in the frozen Style 256-D projector space."""
 import json
 from safetensors import safe_open
 from .features import normalized

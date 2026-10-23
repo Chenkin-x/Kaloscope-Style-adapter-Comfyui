@@ -6,11 +6,13 @@
   "analysis_nodes": 10,
   "generation_nodes": 10,
   "duplicate_node_ids": [],
-  "same_model_folders": [
-    "z3_artist_v1"
+  "public_model_choices": [
+    "artist-v1"
   ],
+  "same_model_files": true,
   "same_socket": true,
   "generation_routes": [
+    "/kaloscope-adapter/migrate-workflow",
     "/kaloscope-adapter/artists",
     "/kaloscope-adapter/artists/catalog.csv"
   ]

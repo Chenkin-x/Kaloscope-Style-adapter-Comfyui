@@ -10,14 +10,14 @@ from .features import blend, encode
 from .schedule import sigma_schedule
 from .artists import artist_feature
 from .artist_mix import mix_artists
+from .paths import adapter_paths, bank_paths
 
 
 def artist_bank_paths():
-    root = Path(folder_paths.models_dir) / 'kaloscope_style_banks'
-    return {p.relative_to(root).as_posix(): p for p in sorted(root.rglob('*.safetensors'))}
+    return bank_paths(folder_paths.models_dir)
 
 
-class KaloscopeZ3ArtistStyle:
+class KaloscopeStyleArtist:
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {'bank': (list(artist_bank_paths()),),
@@ -42,7 +42,7 @@ class KaloscopeZ3ArtistStyle:
 
 
 
-class KaloscopeZ3ArtistMix:
+class KaloscopeStyleArtistMix:
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {'bank': (list(artist_bank_paths()),),
@@ -67,19 +67,15 @@ class KaloscopeZ3ArtistMix:
 
 
 def checkpoint_paths():
-    root = Path(folder_paths.models_dir) / 'kaloscope_z3'
-    if not root.exists():
-        return {}
-    return {p.relative_to(root).as_posix(): p for p in sorted(root.rglob('*'))
-            if p.is_file() and p.suffix.lower() in ('.pt', '.pth', '.safetensors')}
+    return adapter_paths(folder_paths.models_dir)
 
 
-class KaloscopeZ3Loader:
+class KaloscopeStyleAdapterLoader:
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {'checkpoint': (list(checkpoint_paths()),)}}
 
-    RETURN_TYPES = ('KALOSCOPE_Z3_ADAPTER', 'STRING')
+    RETURN_TYPES = ('KALOSCOPE_STYLE_ADAPTER', 'STRING')
     RETURN_NAMES = ('adapter', 'checkpoint_info')
     FUNCTION = 'load'
     CATEGORY = 'Kaloscope Adapter'
@@ -95,7 +91,7 @@ class KaloscopeZ3Loader:
         from comfy import model_management, ops
         path = checkpoint_paths().get(checkpoint)
         if path is None:
-            raise FileNotFoundError(f'Place {checkpoint} under ComfyUI/models/kaloscope_z3/.')
+            raise FileNotFoundError(f'Place {checkpoint} under ComfyUI/models/kaloscope_adapters/.')
         bundle = load_adapter(path, operations=ops.manual_cast)
         bundle['patcher'] = ModelPatcher(bundle['adapter'], load_device=model_management.get_torch_device(),
                                          offload_device=model_management.unet_offload_device())
@@ -104,7 +100,7 @@ class KaloscopeZ3Loader:
         return bundle, json.dumps(info, ensure_ascii=False)
 
 
-class KaloscopeZ3EncodeReference:
+class KaloscopeStyleEncodeReference:
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {'reference_images': ('IMAGE',), 'model': ('KALOSCOPE_MODEL',)}}
@@ -118,7 +114,7 @@ class KaloscopeZ3EncodeReference:
         return (encode(reference_images, model),)
 
 
-class KaloscopeZ3BlendFeatures:
+class KaloscopeStyleBlendFeatures:
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {'features': ('TENSOR',), 'weights': ('STRING', {'default': ''})},
@@ -135,10 +131,10 @@ class KaloscopeZ3BlendFeatures:
         return (blend(torch.cat(rows), weights),)
 
 
-class KaloscopeZ3Apply:
+class KaloscopeStyleApply:
     @classmethod
     def INPUT_TYPES(cls):
-        return {'required': {'model': ('MODEL',), 'adapter': ('KALOSCOPE_Z3_ADAPTER',),
+        return {'required': {'model': ('MODEL',), 'adapter': ('KALOSCOPE_STYLE_ADAPTER',),
                 'style_features': ('TENSOR',),
                 'style_guidance': ('FLOAT', {'default': 5.5, 'min': 0., 'max': 20., 'step': .1}),
                 'adapter_strength': ('FLOAT', {'default': 1., 'min': 0., 'max': 3., 'step': .05})}}
@@ -157,14 +153,14 @@ class KaloscopeZ3Apply:
                 raise ValueError('Guidance and strength must be finite and nonnegative.')
         base = model.get_model_object('diffusion_model')
         if not isinstance(base, SingleStreamDiT) or len(base.blocks) != 28 or base.first.out_features != 6144:
-            raise ValueError('Z3 requires the native ComfyUI Krea2 28-block, width-6144 MODEL.')
-        if model.model_options.get('kaloscope_z3'):
-            raise ValueError('Z3 already applied. Blend references before one Apply node, or branch from the original MODEL.')
+            raise ValueError('Style requires the native ComfyUI Krea2 28-block, width-6144 MODEL.')
+        if model.model_options.get('kaloscope_style'):
+            raise ValueError('Style already applied. Blend references before one Apply node, or branch from the original MODEL.')
         clone = model.clone()
         if style_guidance == 0 or adapter_strength == 0:
             return (clone,)
         if any(key in model.model_options for key in ('sampler_cfg_function', 'sampler_calc_cond_batch_function')):
-            raise ValueError('Z3 needs independent text/style CFG; remove the other custom CFG patch first.')
+            raise ValueError('Style needs independent text/style CFG; remove the other custom CFG patch first.')
         features = blend(style_features)
         for index, bank in zip(adapter['config']['injection_indices'], adapter['config']['injection_slots']):
             name = f'diffusion_model.blocks.{index}.forward'
@@ -172,14 +168,14 @@ class KaloscopeZ3Apply:
                 raise ValueError(f'Another node already replaces {name}.')
             original = model.get_model_object(name)
             clone.add_object_patch(name, AfterBlock(original, adapter['adapter'], features, bank, adapter_strength))
-        clone.set_additional_models('kaloscope_z3', [adapter['patcher']])
+        clone.set_additional_models('kaloscope_style', [adapter['patcher']])
         clone.set_model_sampler_cfg_function(StyleGuidance(style_guidance), disable_cfg1_optimization=True)
-        clone.model_options['kaloscope_z3'] = {'step': adapter['step'], 'style_guidance': style_guidance,
+        clone.model_options['kaloscope_style'] = {'step': adapter['step'], 'style_guidance': style_guidance,
                                              'adapter_strength': adapter_strength}
         return (clone,)
 
 
-class KaloscopeZ3Sigmas:
+class KaloscopeStyleSigmas:
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {'steps': ('INT', {'default': 28, 'min': 1, 'max': 1000}),
@@ -194,31 +190,31 @@ class KaloscopeZ3Sigmas:
         return (sigma_schedule(steps, start_sigma, latent, model_variant),)
 
 
-from .encoder import KaloscopeZ3EncoderLoader
+from .encoder import KaloscopeStyleEncoderLoader
 
 NODE_CLASS_MAPPINGS = {
-    'KaloscopeZ3EncoderLoader': KaloscopeZ3EncoderLoader,
-    'KaloscopeZ3ArtistStyle': KaloscopeZ3ArtistStyle,
-    'KaloscopeZ3ArtistMix': KaloscopeZ3ArtistMix,
-    'KaloscopeZ3Loader': KaloscopeZ3Loader,
-    'KaloscopeZ3EncodeReference': KaloscopeZ3EncodeReference,
-    'KaloscopeZ3BlendFeatures': KaloscopeZ3BlendFeatures,
-    'KaloscopeZ3Apply': KaloscopeZ3Apply,
-    'KaloscopeZ3Sigmas': KaloscopeZ3Sigmas,
+    'KaloscopeStyleEncoderLoader': KaloscopeStyleEncoderLoader,
+    'KaloscopeStyleArtist': KaloscopeStyleArtist,
+    'KaloscopeStyleArtistMix': KaloscopeStyleArtistMix,
+    'KaloscopeStyleAdapterLoader': KaloscopeStyleAdapterLoader,
+    'KaloscopeStyleEncodeReference': KaloscopeStyleEncodeReference,
+    'KaloscopeStyleBlendFeatures': KaloscopeStyleBlendFeatures,
+    'KaloscopeStyleApply': KaloscopeStyleApply,
+    'KaloscopeStyleSigmas': KaloscopeStyleSigmas,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    'KaloscopeZ3EncoderLoader': 'Kaloscope Adapter · Style Encoder Loader',
-    'KaloscopeZ3ArtistStyle': 'Kaloscope Z3 Artist Name Style',
-    'KaloscopeZ3ArtistMix': 'Kaloscope Z3 Weighted Artist Mix',
-    'KaloscopeZ3Loader': 'Kaloscope Z3 Checkpoint Loader',
-    'KaloscopeZ3EncodeReference': 'Kaloscope Z3 Reference Encode',
-    'KaloscopeZ3BlendFeatures': 'Kaloscope Z3 Blend Styles',
-    'KaloscopeZ3Apply': 'Kaloscope Z3 Apply Style',
-    'KaloscopeZ3Sigmas': 'Kaloscope Z3 Resolution Aware Sigmas',
+    'KaloscopeStyleEncoderLoader': 'Kaloscope Style Encoder Loader',
+    'KaloscopeStyleArtist': 'Kaloscope Artist Style',
+    'KaloscopeStyleArtistMix': 'Kaloscope Artist Mix',
+    'KaloscopeStyleAdapterLoader': 'Kaloscope Adapter Loader',
+    'KaloscopeStyleEncodeReference': 'Kaloscope Reference Encode',
+    'KaloscopeStyleBlendFeatures': 'Kaloscope Blend Styles',
+    'KaloscopeStyleApply': 'Kaloscope Apply Style',
+    'KaloscopeStyleSigmas': 'Kaloscope Krea2 Sampling Schedule',
 }
 
-from .moss import KaloscopeMOSSBaseLoader, KaloscopeMOSSZ3Sigmas
+from .moss import KaloscopeMOSSBaseLoader, KaloscopeMOSSSigmas
 NODE_CLASS_MAPPINGS['KaloscopeMOSSBaseLoader'] = KaloscopeMOSSBaseLoader
 NODE_DISPLAY_NAME_MAPPINGS['KaloscopeMOSSBaseLoader'] = 'Kaloscope MOSS Base Loader'
-NODE_CLASS_MAPPINGS['KaloscopeMOSSZ3Sigmas'] = KaloscopeMOSSZ3Sigmas
-NODE_DISPLAY_NAME_MAPPINGS['KaloscopeMOSSZ3Sigmas'] = 'Kaloscope MOSS Z3 Evaluation Sigmas'
+NODE_CLASS_MAPPINGS['KaloscopeMOSSSigmas'] = KaloscopeMOSSSigmas
+NODE_DISPLAY_NAME_MAPPINGS['KaloscopeMOSSSigmas'] = 'Kaloscope MOSS Sampling Schedule'

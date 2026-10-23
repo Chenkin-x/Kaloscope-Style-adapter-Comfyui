@@ -1,4 +1,4 @@
-"""Reference preprocessing exactly matching the Z3 full-data training crop."""
+"""Reference preprocessing exactly matching the Style full-data training crop."""
 import numpy as np
 from PIL import Image
 import torch
@@ -10,7 +10,7 @@ def normalized(features):
     if features.ndim == 1:
         features = features[None]
     if features.ndim != 2 or features.shape[1] != 256 or not features.shape[0]:
-        raise ValueError('Z3 requires [N,256] artist projector features, not backbone or patch tokens.')
+        raise ValueError('Style requires [N,256] artist projector features, not backbone or patch tokens.')
     if not torch.isfinite(features).all() or (features.norm(dim=1) < 1e-8).any():
         raise ValueError('Style features must be finite and nonzero.')
     return F.normalize(features, dim=1)

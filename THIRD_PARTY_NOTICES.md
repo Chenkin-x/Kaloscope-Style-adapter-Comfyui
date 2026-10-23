@@ -7,3 +7,5 @@
 - Upstream code licenses do not replace model weight licenses or grant rights to external datasets. See the accompanying model release documentation for weight provenance and terms.
 
 Maintain the shared `KALOSCOPE_MODEL` input contract, reference preprocessing, and numerical parity when updating the encoder. Keep runtime imports relative; do not add global `sys.path` or module aliases. Regression tests belong in `tests/`; full-weight parity evidence belongs in `docs/validation/`.
+
+Legacy checkpoint signatures, filename aliases and workflow identifiers are isolated in `kaloscope_style/compat.py`. They remain solely for reading existing assets; public nodes, sockets, examples and user documentation use functional names. Model tensor data and numerical inference operations are unchanged by this naming update.

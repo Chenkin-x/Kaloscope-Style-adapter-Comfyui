@@ -14,8 +14,8 @@ def normalized_key(key):
 
 
 def model_folders(models_dir):
-    root = Path(models_dir) / 'kaloscope'
-    return {p.name: p for p in sorted(root.iterdir()) if p.is_dir()} if root.is_dir() else {}
+    from .paths import encoder_paths
+    return encoder_paths(models_dir)
 
 
 def read_config(directory):
@@ -117,11 +117,11 @@ def load_encoder(directory):
     if embedded.get('name') and embedded['name'] != spec.get('name'):
         raise ValueError('config.json architecture differs from checkpoint model_config.')
     if spec.get('name') != 'dinov3_vitb16':
-        raise ValueError('Z3 requires the matched Kaloscope artist-v1 DINOv3 ViT-B/16 with a 256D projector; LSNet and other backbones are not style encoders.')
+        raise ValueError('Style requires the matched Kaloscope artist-v1 DINOv3 ViT-B/16 with a 256D projector; LSNet and other backbones are not style encoders.')
     if spec.get('pooling', config.get('pooling', 'cls_mean')) != 'cls_mean' or spec.get('kwargs'):
-        raise ValueError('Z3 requires the standard artist-v1 cls_mean architecture without backbone overrides.')
+        raise ValueError('Style requires the standard artist-v1 cls_mean architecture without backbone overrides.')
     if config.get('input_size', 512) != 512 or spec.get('projection_dim', 256) != 256:
-        raise ValueError('Z3 artist-v1 requires input_size=512 and projection_dim=256.')
+        raise ValueError('Style artist-v1 requires input_size=512 and projection_dim=256.')
     backbone = build_backbone()
     backbone_state = {k.removeprefix('backbone.'): v for k, v in state.items() if k.startswith('backbone.')}
     if not backbone_state:
@@ -140,7 +140,7 @@ def load_encoder(directory):
             'feature_dim': 256, 'has_classifier': False, 'checkpoint': str(checkpoint)}
 
 
-class KaloscopeZ3EncoderLoader:
+class KaloscopeStyleEncoderLoader:
     @classmethod
     def INPUT_TYPES(cls):
         import folder_paths

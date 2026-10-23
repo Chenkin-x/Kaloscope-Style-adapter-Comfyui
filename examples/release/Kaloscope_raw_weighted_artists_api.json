@@ -1,0 +1,157 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_raw.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "6": {
+    "class_type": "KaloscopeStyleArtistMix",
+    "inputs": {
+      "bank": "artist-v1.safetensors",
+      "artist_tags": "rolua, (wanke:0.8), (nineo:0.5)"
+    }
+  },
+  "7": {
+    "class_type": "KaloscopeStyleAdapterLoader",
+    "inputs": {
+      "checkpoint": "Krea-Kaloscope-Raw.safetensors"
+    }
+  },
+  "8": {
+    "class_type": "KaloscopeStyleApply",
+    "inputs": {
+      "style_guidance": 3.5,
+      "adapter_strength": 1.0,
+      "model": [
+        "1",
+        0
+      ],
+      "adapter": [
+        "7",
+        0
+      ],
+      "style_features": [
+        "6",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "An anime illustration of a girl reading a book by a window, soft afternoon light, potted plants, medium shot.",
+      "clip": [
+        "2",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "2",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "15": {
+    "class_type": "KaloscopeStyleSigmas",
+    "inputs": {
+      "steps": 25,
+      "start_sigma": 1.0,
+      "latent": [
+        "19",
+        0
+      ],
+      "model_variant": "raw"
+    }
+  },
+  "16": {
+    "class_type": "SamplerCustom",
+    "inputs": {
+      "add_noise": true,
+      "noise_seed": 17,
+      "cfg": 2.0,
+      "model": [
+        "8",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "sampler": [
+        "14",
+        0
+      ],
+      "sigmas": [
+        "15",
+        0
+      ],
+      "latent_image": [
+        "19",
+        0
+      ]
+    }
+  },
+  "17": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "16",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "18": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "KaloscopeRelease/raw_weighted_artists",
+      "images": [
+        "17",
+        0
+      ]
+    }
+  },
+  "19": {
+    "class_type": "EmptyHunyuanLatentVideo",
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "length": 1,
+      "batch_size": 1
+    }
+  }
+}

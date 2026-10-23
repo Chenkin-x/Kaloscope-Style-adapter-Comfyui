@@ -9,6 +9,14 @@ from .catalog import artist_index
 
 
 def register_routes(routes, bank_paths):
+    @routes.post('/kaloscope-adapter/migrate-workflow')
+    async def migrate(request):
+        from .workflows import migrate_workflow
+        try:
+            return web.json_response(migrate_workflow(await request.json()))
+        except (ValueError, KeyError, TypeError, IndexError) as exc:
+            return web.json_response({'error': 'Invalid workflow graph.'}, status=400)
+
     def index_for(request):
         name = request.query.get('bank', '')
         if not name:

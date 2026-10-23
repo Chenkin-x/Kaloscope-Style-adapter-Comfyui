@@ -1,15 +1,15 @@
 [project]
 name = "kaloscope-style-adapter-comfyui"
-description = "Kaloscope Z3 style adapters, artist search and reference-image conditioning for ComfyUI"
-version = "2.0.0"
+description = "Kaloscope style adapters, artist search and reference-image conditioning for ComfyUI"
+version = "3.0.0"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = ["torch>=2.4.1", "numpy>=1.19.0", "Pillow>=8.0.0", "safetensors>=0.4.0", "aiohttp>=3.9"]
 
 [project.urls]
-Repository = "https://github.com/222222222l/Kaloscope-Style-adapter-Comfyui"
-Documentation = "https://github.com/222222222l/Kaloscope-Style-adapter-Comfyui#readme"
-"Bug Tracker" = "https://github.com/222222222l/Kaloscope-Style-adapter-Comfyui/issues"
+Repository = "https://github.com/Chenkin-x/Kaloscope-Style-adapter-Comfyui"
+Documentation = "https://github.com/Chenkin-x/Kaloscope-Style-adapter-Comfyui#readme"
+"Bug Tracker" = "https://github.com/Chenkin-x/Kaloscope-Style-adapter-Comfyui/issues"
 
 [tool.comfy]
 DisplayName = "Kaloscope Style Adapter"

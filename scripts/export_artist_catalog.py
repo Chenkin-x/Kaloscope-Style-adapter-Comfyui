@@ -1,10 +1,13 @@
-"""Export a supported-name CSV from a Z3 bank; optionally include verified aliases."""
+"""Export a supported-name CSV from a Style bank; optionally include verified aliases."""
 import argparse
 import csv
 import hashlib
 import json
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from safetensors import safe_open
+from kaloscope_style.compat import BANK_FORMAT
 
 
 def main():
@@ -20,7 +23,7 @@ def main():
             aliases.setdefault(new, []).append(old)
     with safe_open(str(args.bank), framework='pt') as bank:
         meta = bank.metadata()
-        assert meta['format'] == 'kaloscope_z3_artist_bank_v1'
+        assert meta['format'] == BANK_FORMAT
         names = json.loads(meta['names'])
         counts = bank.get_tensor('counts').tolist()
         concentration = bank.get_tensor('concentration').tolist()

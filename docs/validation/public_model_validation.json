@@ -1,0 +1,28 @@
+{
+  "node_schemas_without_research_labels": 10,
+  "released_adapters_loaded_from_existing_files": [
+    {
+      "name": "Krea-Kaloscope-Raw.safetensors",
+      "step": 63006,
+      "backend": "krea2",
+      "parameters": 13308672
+    },
+    {
+      "name": "Krea-Kaloscope-Turbo.safetensors",
+      "step": 33000,
+      "backend": "krea2",
+      "parameters": 13308672
+    },
+    {
+      "name": "Kaloscope-MOSS.safetensors",
+      "step": 8500,
+      "backend": "moss",
+      "parameters": 7017216
+    }
+  ],
+  "artist_bank_lookup": "fkey: finite 256D feature",
+  "file_copies": 0,
+  "encoder_public_choices": [
+    "artist-v1"
+  ]
+}

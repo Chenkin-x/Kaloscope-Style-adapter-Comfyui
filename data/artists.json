@@ -1,7 +1,7 @@
 {
   "artists": 44129,
   "aliases": 105,
-  "bank_name": "z3_artist_v1_recent.safetensors",
+  "bank_name": "artist-v1.safetensors",
   "bank_sha256": "22e8bab46f5848f74d643277133fc65d760de2a5961cc51a575d818ee319104a",
   "encoder_sha256": "c370c49c7a7c1a68b2942b8b3aab080c25384a67c9d652d2005e15c8ab8860dd",
   "source": "artist-heads v1 newest training-supported year group; one representative per family",

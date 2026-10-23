@@ -3,7 +3,7 @@
     "ui": 8,
     "api": 8
   },
-  "schema_source": "Recorded ComfyUI 8189 object_info + actual standalone loader schema, read-only",
+  "schema_source": "Recorded ComfyUI 8189 object_info + actual public node schemas, read-only",
   "checks": [
     "required inputs",
     "installed model choices",
@@ -12,5 +12,6 @@
     "UI/API link parity",
     "no legacy VAE alias"
   ],
-  "inference_submitted": false
+  "inference_submitted": false,
+  "user_supplied_image": "reference.png is a placeholder; choose an image in LoadImage"
 }

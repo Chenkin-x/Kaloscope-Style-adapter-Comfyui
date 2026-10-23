@@ -34,7 +34,7 @@ class KaloscopeMOSSBaseLoader:
         return loader.execute(str(path), weight_dtype, text_device).result
 
 
-class KaloscopeMOSSZ3Sigmas:
+class KaloscopeMOSSSigmas:
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {'steps': ('INT', {'default': 50, 'min': 1, 'max': 1000}),
@@ -64,9 +64,9 @@ class MOSSAfterBlock:
     def __call__(self, args, extra):
         result = extra['original_block'](args)
         options = args['transformer_options']
-        if not options.get('kaloscope_z3_enabled', False):
+        if not options.get('kaloscope_style_enabled', False):
             return result
-        n = options['kaloscope_z3_image_tokens']
+        n = options['kaloscope_style_image_tokens']
         x = result['img']
         with precision_context(x):
             style = self.adapter.encode(self.features.to(device=x.device, dtype=torch.float32))
@@ -102,7 +102,7 @@ class MOSSStyleGuidance:
         x = args['input']
         options = dict(args['model_options'])
         options['transformer_options'] = dict(options.get('transformer_options', {}),
-            kaloscope_z3_enabled=True, kaloscope_z3_image_tokens=x.shape[-2] * x.shape[-1])
+            kaloscope_style_enabled=True, kaloscope_style_image_tokens=x.shape[-2] * x.shape[-1])
         styled = calc_cond_batch(args['model'], [args['input_cond']], x, args['sigma'], options)[0]
         return x - guided_denoised(negative, native, styled, args['cond_scale'], self.style_cfg)
 
@@ -114,11 +114,11 @@ def apply_moss(model, bundle, features, style_guidance, adapter_strength):
     base = model.get_model_object('diffusion_model')
     if (type(base).__name__ != 'MOSSImageTransformer' or len(base.layers) != 42
             or base.video_embedder.out_features != 3072 or base.latent_channels != 128):
-        raise ValueError('MOSS Z3 requires the official MOSS-Image 42-layer, width-3072 MODEL; use MOSS Base Loader.')
-    if model.model_options.get('kaloscope_z3'):
-        raise ValueError('Z3 already applied; blend styles before one Apply node.')
+        raise ValueError('MOSS Style requires the official MOSS-Image 42-layer, width-3072 MODEL; use MOSS Base Loader.')
+    if model.model_options.get('kaloscope_style'):
+        raise ValueError('Style already applied; blend styles before one Apply node.')
     if any(key in model.model_options for key in ('sampler_cfg_function', 'sampler_calc_cond_batch_function')):
-        raise ValueError('MOSS Z3 includes negative skip22 and independent CFG; remove other CFG/SkipLayerGuidance patches.')
+        raise ValueError('MOSS Style includes negative skip22 and independent CFG; remove other CFG/SkipLayerGuidance patches.')
     patches = model.model_options.get('transformer_options', {}).get('patches_replace', {}).get('dit', {})
     if any(('single_block', i) in patches for i in range(42)):
         raise ValueError('Another node already replaces a MOSS transformer block.')
@@ -129,9 +129,9 @@ def apply_moss(model, bundle, features, style_guidance, adapter_strength):
         for index, bank in zip(bundle['config']['injection_indices'], bundle['config']['injection_slots']):
             clone.set_model_patch_replace(MOSSAfterBlock(bundle['adapter'], features, bank, adapter_strength),
                                           'dit', 'single_block', index)
-        clone.set_additional_models('kaloscope_z3', [bundle['patcher']])
+        clone.set_additional_models('kaloscope_style', [bundle['patcher']])
     clone.set_model_sampler_calc_cond_batch_function(moss_cond_batch)
     clone.set_model_sampler_cfg_function(MOSSStyleGuidance(style_guidance if enabled else 0), disable_cfg1_optimization=True)
-    clone.model_options['kaloscope_z3'] = dict(backend='moss', step=bundle['step'],
+    clone.model_options['kaloscope_style'] = dict(backend='moss', step=bundle['step'],
         style_guidance=style_guidance, adapter_strength=adapter_strength, uncond_skip_layers=[22])
     return clone

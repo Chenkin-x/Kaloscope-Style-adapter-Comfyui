@@ -1,1 +1,1 @@
-"""Z3 style transfer, kept independent of the training repository."""
+"""Style style transfer, kept independent of the training repository."""

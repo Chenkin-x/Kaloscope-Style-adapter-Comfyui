@@ -99,6 +99,18 @@ class ArtistRouteTests(unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self):
         await self.client.close();self.temp.cleanup()
 
+    async def test_workflow_route_migrates_without_modifying_prompts(self):
+        from kaloscope_style.compat import NODE_IDS
+        old = next(k for k, v in NODE_IDS.items() if v == 'KaloscopeStyleArtistMix')
+        graph = {'1': {'class_type': old, 'inputs': {'bank': 'bank.safetensors', 'artist_tags': 'fkey, (rolua:0.8)'}}}
+        response = await self.client.post('/kaloscope-adapter/migrate-workflow', json=graph)
+        self.assertEqual(response.status, 200)
+        migrated = await response.json()
+        self.assertEqual(migrated['1']['class_type'], 'KaloscopeStyleArtistMix')
+        self.assertEqual(migrated['1']['inputs'], graph['1']['inputs'])
+        response = await self.client.post('/kaloscope-adapter/migrate-workflow', json=[])
+        self.assertEqual(response.status, 400)
+
     async def test_search_and_csv_download_use_selected_bank(self):
         response = await self.client.get('/kaloscope-adapter/artists', params={'bank':'bank.safetensors','q':'fky'})
         self.assertEqual(response.status, 200)

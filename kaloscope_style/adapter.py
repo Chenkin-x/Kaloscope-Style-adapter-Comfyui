@@ -1,4 +1,4 @@
-"""Checkpoint-compatible Z3 side adapter; native Krea2 modulation is unchanged."""
+"""Checkpoint-compatible Style side adapter; native Krea2 modulation is unchanged."""
 import contextlib
 import torch
 from torch import nn
@@ -43,22 +43,22 @@ class AfterBlock:
     def __call__(self, *args, **kwargs):
         x = self.original(*args, **kwargs)
         options = kwargs.get('transformer_options', {})
-        if options.get('kaloscope_z3_disabled', False) or self.strength == 0:
+        if options.get('kaloscope_style_disabled', False) or self.strength == 0:
             return x
         if options.get('reference_image_num_tokens'):
-            raise ValueError('Z3 does not support Krea2 reference_latents/ICL in the same model call.')
+            raise ValueError('Style does not support Krea2 reference_latents/ICL in the same model call.')
         span = options.get('img_slice')
         if span is None:
             raise RuntimeError('Update ComfyUI: Krea2 must expose transformer_options[img_slice].')
         start, end = span
         flags = options.get('cond_or_uncond')
         if not flags or x.shape[0] % len(flags):
-            raise ValueError('Z3 requires a standard ComfyUI CFG sampler with cond_or_uncond metadata.')
+            raise ValueError('Style requires a standard ComfyUI CFG sampler with cond_or_uncond metadata.')
         active = torch.tensor([flag == 0 for flag in flags], device=x.device)
         active = active.repeat_interleave(x.shape[0] // len(flags))
         if not active.any():
             return x
-        # Z3 has no independently trained AdaLN; inject AFTER each native block.
+        # Style has no independently trained AdaLN; inject AFTER each native block.
         with precision_context(x):
             style = self.adapter.encode(self.features.to(device=x.device, dtype=torch.float32))
             style = style.expand(x.shape[0], -1, -1)
@@ -78,7 +78,7 @@ class StyleGuidance:
     def __call__(self, args):
         from comfy.samplers import calc_cond_batch
         options = dict(args['model_options'])
-        options['transformer_options'] = dict(options.get('transformer_options', {}), kaloscope_z3_disabled=True)
+        options['transformer_options'] = dict(options.get('transformer_options', {}), kaloscope_style_disabled=True)
         text_only = calc_cond_batch(args['model'], [args['input_cond']], args['input'], args['sigma'], options)[0]
         result = guided_denoised(args['uncond_denoised'], text_only, args['cond_denoised'],
                                 args['cond_scale'], self.style_cfg)

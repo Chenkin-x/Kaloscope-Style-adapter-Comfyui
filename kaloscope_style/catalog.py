@@ -1,3 +1,4 @@
+from .compat import BANK_FORMAT, public_asset_name, public_text
 """Local artist names and search. No model weights are retained by this module."""
 import csv
 import difflib
@@ -98,8 +99,8 @@ def _bank_index(version, csv_version):
     aliases = {r['name']: r['aliases'] for r in _csv_rows(csv_version)}
     with safe_open(version[0], framework='pt', device='cpu') as bank:
         meta = bank.metadata() or {}
-        if meta.get('format') != 'kaloscope_z3_artist_bank_v1' or meta.get('encoder_sha256') != ENCODER_SHA256:
-            raise ValueError('Artist bank must use the matching Z3 artist-v1 encoder.')
+        if meta.get('format') != BANK_FORMAT or meta.get('encoder_sha256') != ENCODER_SHA256:
+            raise ValueError('Artist bank must use the matching Style artist-v1 encoder.')
         names = json.loads(meta['names'])
         if not isinstance(names, list) or not all(isinstance(n, str) and n for n in names) or len(set(names)) != len(names):
             raise ValueError('Artist bank names must be unique, nonempty strings.')
@@ -108,8 +109,8 @@ def _bank_index(version, csv_version):
         counts = bank.get_tensor('counts').tolist()
         concentrations = bank.get_tensor('concentration').tolist() if 'concentration' in bank.keys() else [None] * len(names)
         rows = [dict(name=n, aliases=aliases.get(n, []), families=int(counts[i]), concentration=concentrations[i]) for i, n in enumerate(names)]
-        index = ArtistIndex(rows, Path(version[0]).name, True)
-        index.bank_source = meta.get('source')
+        index = ArtistIndex(rows, public_asset_name(Path(version[0]).name), True)
+        index.bank_source = public_text(meta.get('source') or '')
         return index
 
 
