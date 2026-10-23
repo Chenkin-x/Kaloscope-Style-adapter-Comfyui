@@ -152,6 +152,6 @@ python scripts/export_adapter.py checkpoint.pt adapter.safetensors
 
 ## 许可与致谢
 
-本项目基于 [comfyui-kaloscope](https://github.com/spawner1145/comfyui-kaloscope) 的相关接口与实现开发，独立维护生图功能。节点代码沿用 GPL-3.0，见 [LICENSE](LICENSE)；所含 DINOv3 源码保留其[独立许可](kaloscope_style/_vendor/dinov3/LICENSE.md)。来源与归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+本项目基于 [comfyui-kaloscope](https://github.com/Chenkin-x/comfyui-kaloscope) 的相关接口与实现开发，独立维护生图功能。节点代码沿用 GPL-3.0，见 [LICENSE](LICENSE)；所含 DINOv3 源码保留其[独立许可](kaloscope_style/_vendor/dinov3/LICENSE.md)。来源与归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 Krea Kaloscope Raw / Turbo 权重使用 Krea 2 Community License；Kaloscope MOSS 权重使用 Apache-2.0；配套编码器保留 DINOv3 License。具体条款见[模型许可](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/LICENSE.md)与 [NOTICE](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/NOTICE)。
