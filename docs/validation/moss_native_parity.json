@@ -1,0 +1,118 @@
+{
+  "core_revision": "d07dff4565ea9804277fff8cdfa0c817e08c3d44",
+  "device": "cpu",
+  "dtype": "float32",
+  "eager_math": true,
+  "comparisons": [
+    {
+      "text_tokens": 5,
+      "sigma": 0.17,
+      "mode": "base",
+      "max_abs_error": 3.2782554626464844e-07
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.17,
+      "mode": "style",
+      "max_abs_error": 3.5762786865234375e-07
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.17,
+      "mode": "skip",
+      "max_abs_error": 3.8743019104003906e-07
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.51,
+      "mode": "base",
+      "max_abs_error": 1.1920928955078125e-06
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.51,
+      "mode": "style",
+      "max_abs_error": 1.2516975402832031e-06
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.51,
+      "mode": "skip",
+      "max_abs_error": 1.0132789611816406e-06
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.93,
+      "mode": "base",
+      "max_abs_error": 1.430511474609375e-06
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.93,
+      "mode": "style",
+      "max_abs_error": 1.6689300537109375e-06
+    },
+    {
+      "text_tokens": 5,
+      "sigma": 0.93,
+      "mode": "skip",
+      "max_abs_error": 1.430511474609375e-06
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.17,
+      "mode": "base",
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.17,
+      "mode": "style",
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.17,
+      "mode": "skip",
+      "max_abs_error": 4.76837158203125e-07
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.51,
+      "mode": "base",
+      "max_abs_error": 8.344650268554688e-07
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.51,
+      "mode": "style",
+      "max_abs_error": 9.5367431640625e-07
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.51,
+      "mode": "skip",
+      "max_abs_error": 1.1920928955078125e-06
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.93,
+      "mode": "base",
+      "max_abs_error": 1.5944242477416992e-06
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.93,
+      "mode": "style",
+      "max_abs_error": 1.6987323760986328e-06
+    },
+    {
+      "text_tokens": 11,
+      "sigma": 0.93,
+      "mode": "skip",
+      "max_abs_error": 1.5497207641601562e-06
+    }
+  ],
+  "max_abs_error": 1.6987323760986328e-06,
+  "scope": "Actual core and HF modules; 3-layer miniature networks, batch 2, two text lengths, three sigmas, base/style/skipped-block. Not a full-weight image quality test."
+}

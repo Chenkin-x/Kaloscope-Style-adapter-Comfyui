@@ -1,0 +1,18 @@
+{
+  "core_commit": "d07dff4565ea9804277fff8cdfa0c817e08c3d44",
+  "backend": "MOSSImage",
+  "model_source": "existing MOSS-Image-Base HF tensor shards loaded by native ComfyUI state-dict loader",
+  "model_sampling_multiplier": 1.0,
+  "adapter_blocks": 42,
+  "shape": [
+    1,
+    128,
+    8,
+    8
+  ],
+  "all_outputs_finite": true,
+  "disabled_style_bitwise_equals_base": true,
+  "style_mean_abs_delta": 0.13605864346027374,
+  "seconds": 7.49,
+  "scope": "Real Base+adapter weights, CUDA BF16, one sigma and random text embeddings; not a full workflow or visual-quality evaluation."
+}

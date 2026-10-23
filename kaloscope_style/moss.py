@@ -8,6 +8,8 @@ from .features import blend
 
 
 class KaloscopeMOSSBaseLoader:
+    # Kept for existing HF-directory workflows. New graphs use core loaders.
+    DEPRECATED = True
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {
@@ -24,7 +26,7 @@ class KaloscopeMOSSBaseLoader:
         import nodes
         loader = nodes.NODE_CLASS_MAPPINGS.get('MOSSImageHFLoader')
         if loader is None:
-            raise RuntimeError('Install the official MOSS-Image ComfyUI plugin (moss-image), then restart ComfyUI.')
+            raise RuntimeError('This legacy HF loader requires the moss-image plugin. For native ComfyUI use UNETLoader, CLIPLoader(type=moss_image), and VAELoader; see the current examples.')
         path = Path(model_path).expanduser()
         if not path.is_absolute():
             path = Path(folder_paths.models_dir) / path
@@ -112,9 +114,17 @@ def apply_moss(model, bundle, features, style_guidance, adapter_strength):
         if not math.isfinite(value) or value < 0:
             raise ValueError('Guidance and strength must be finite and nonnegative.')
     base = model.get_model_object('diffusion_model')
-    if (type(base).__name__ != 'MOSSImageTransformer' or len(base.layers) != 42
+    native_core = type(base).__name__ == 'MOSSImage'
+    if (type(base).__name__ not in ('MOSSImage', 'MOSSImageTransformer') or len(base.layers) != 42
             or base.video_embedder.out_features != 3072 or base.latent_channels != 128):
-        raise ValueError('MOSS Style requires the official MOSS-Image 42-layer, width-3072 MODEL; use MOSS Base Loader.')
+        raise ValueError('MOSS Style requires a 42-layer, width-3072 MOSS-Image-Base MODEL. Load moss_image_base_bf16.safetensors with the native Load Diffusion Model node.')
+    # Core embeds sigma * 1000 internally; the HF backend embeds its input directly.
+    # Changing the model sampling multiplier would silently corrupt every timestep.
+    expected_multiplier = 1.0 if native_core else 1000.0
+    sampling = model.get_model_object('model_sampling')
+    if getattr(sampling, 'multiplier', None) != expected_multiplier:
+        hint = 'Keep native sampling, or use ModelSamplingAuraFlow; do not use ModelSamplingSD3.' if native_core else 'Keep the HF loader sampling configuration.'
+        raise ValueError(f'MOSS timestep multiplier must be {expected_multiplier:g}. {hint}')
     if model.model_options.get('kaloscope_style'):
         raise ValueError('Style already applied; blend styles before one Apply node.')
     if any(key in model.model_options for key in ('sampler_cfg_function', 'sampler_calc_cond_batch_function')):

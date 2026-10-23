@@ -1,0 +1,28 @@
+{
+  "comfyui_commit": "d07dff4565ea9804277fff8cdfa0c817e08c3d44",
+  "sources": {
+    "comfy/ldm/moss_image/model.py": {
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/d07dff4565ea9804277fff8cdfa0c817e08c3d44/comfy/ldm/moss_image/model.py",
+      "sha256": "a84f9a81f365ccd1038c40166df9fce26be26a4d4f8ca7d16b9fac723c3ff590"
+    },
+    "comfy/supported_models.py": {
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/d07dff4565ea9804277fff8cdfa0c817e08c3d44/comfy/supported_models.py",
+      "sha256": "72e594a47489a66c3a5a4bf1010a41617170470d9a7ed0b8a789d0bb8dc04593"
+    },
+    "comfy/text_encoders/moss_image.py": {
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/d07dff4565ea9804277fff8cdfa0c817e08c3d44/comfy/text_encoders/moss_image.py",
+      "sha256": "5bf5dff2669aab8fccc4a4662a0cd394fd0d7a7ea91f6757291f83e1940d9deb"
+    },
+    "nodes.py": {
+      "url": "https://github.com/Comfy-Org/ComfyUI/blob/d07dff4565ea9804277fff8cdfa0c817e08c3d44/nodes.py",
+      "sha256": "4cfd9be3754f9dc25213febdf96b690d6e32007c2e539d37e799d82226d758c5"
+    }
+  },
+  "published_files": [
+    "diffusion_models/moss_image_base_bf16.safetensors",
+    "text_encoders/qwen3.5_9b_bf16.safetensors",
+    "vae/flux2-vae.safetensors"
+  ],
+  "model_repository": "https://huggingface.co/Comfy-Org/MOSS-Image",
+  "running_comfyui_untouched": true
+}

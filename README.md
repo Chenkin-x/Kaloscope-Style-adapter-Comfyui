@@ -38,7 +38,7 @@ python -m pip install -r Kaloscope-Style-adapter-Comfyui/requirements.txt
 
 请使用运行 ComfyUI 的 Python 环境安装依赖。Windows 便携版使用其 `python_embeded/python.exe`。安装后重启 ComfyUI 并刷新浏览器。
 
-Krea2 需要支持该模型的 ComfyUI 版本。MOSS 需要提供 `MOSSImageHFLoader` 的[官方插件](https://github.com/OpenMOSS/MOSS-Image/blob/main/comfyui/README.md)。
+请更新 ComfyUI 至支持 Krea2 / MOSS-Image 的版本。MOSS 使用内置的 Load Diffusion Model、CLIPLoader 和 VAELoader，无需额外安装 MOSS 加载插件。
 
 ## 模型下载
 
@@ -68,7 +68,7 @@ ComfyUI/models/
 按需下载对应的 adapter。底模、文本编码器和 VAE 需单独安装：
 
 - **Krea2**：从 [Comfy-Org/Krea-2](https://huggingface.co/Comfy-Org/Krea-2) 下载对应底模、文本编码器和 `qwen_image_vae.safetensors`，分别放入 `diffusion_models/`、`text_encoders/` 和 `vae/`。
-- **MOSS**：下载 [MOSS-Image-Base](https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base) 完整目录，在 `MOSSImageHFLoader` 中指定路径。
+- **MOSS**：从 [Comfy-Org/MOSS-Image](https://huggingface.co/Comfy-Org/MOSS-Image) 下载 `moss_image_base_bf16.safetensors`、`qwen3.5_9b_bf16.safetensors` 和 `flux2-vae.safetensors`，分别放入 `diffusion_models/`、`text_encoders/` 和 `vae/`。CLIPLoader 的类型选择 `moss_image`。当前 adapter 匹配 **Base**，不要替换为 SFT。
 
 已有反推插件的匹配 artist-v1 或 v1 classifier 时，直接选择原模型目录，无需再次下载编码器。也可将原 `Kaloscope Model Loader` 的输出连接到本包 `Kaloscope Reference Encode`。纯名称生图不需要加载编码器。
 
@@ -123,7 +123,6 @@ Raw/Turbo 使用单帧 `EmptyHunyuanLatentVideo`；MOSS 使用 `EmptyFlux2Latent
 | Kaloscope Blend Styles | 融合多组风格特征 |
 | Kaloscope Apply Style | 将风格条件应用到生成模型 |
 | Kaloscope Krea2 Sampling Schedule | 生成 Raw/Turbo 采样时间表 |
-| Kaloscope MOSS Base Loader | 加载 MOSS Base，输出 MODEL、CLIP、VAE |
 | Kaloscope MOSS Sampling Schedule | 生成 MOSS 采样时间表 |
 
 ## 使用注意
@@ -131,7 +130,7 @@ Raw/Turbo 使用单帧 `EmptyHunyuanLatentVideo`；MOSS 使用 `EmptyFlux2Latent
 - Adapter需匹配底模，Krea2与MOSS的权重、latent、VAE和时间表不可混用。VAE没有随adapter微调，直接使用对应的官方VAE。
 - 参考图编码器必须匹配artist-v1特征空间；相同输出维度不代表兼容。
 - 风格强度过高可能损害人体和构图。参考图、混合风格和不同种子的效果存在差异。
-- MOSS已包含负分支skip22，不要重复叠加SLG或其他CFG补丁。FP8/GGUF、ControlNet、编译及第三方补丁组合尚未全面验证。
+- MOSS使用官方加载器的默认模型采样设置；不要额外添加 `ModelSamplingSD3`。Apply Style已包含负分支skip22，不要重复叠加SLG或其他CFG补丁。FP8/GGUF、ControlNet、编译及第三方补丁组合尚未全面验证。
 
 旧UI工作流加载时会自动迁移。旧API工作流、合并扩展版安装及模型目录兼容详见[迁移指南](docs/MIGRATION_ZH.md)。MOSS使用细节见 [MOSS说明](README_MOSS_ZH.md)。
 

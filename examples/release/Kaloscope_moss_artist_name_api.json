@@ -1,13 +1,12 @@
 {
   "1": {
-    "class_type": "MOSSImageHFLoader",
+    "class_type": "UNETLoader",
     "inputs": {
-      "model_path": "models/MOSS-Image-Base",
-      "weight_dtype": "bf16",
-      "text_device": "default"
+      "unet_name": "moss_image_base_bf16.safetensors",
+      "weight_dtype": "default"
     },
     "_meta": {
-      "title": "官方 MOSS HF Loader · 选择本机 Base 目录"
+      "title": "MOSS Base · Load Diffusion Model"
     }
   },
   "2": {
@@ -55,8 +54,8 @@
     "class_type": "CLIPTextEncode",
     "inputs": {
       "clip": [
-        "1",
-        1
+        "15",
+        0
       ],
       "text": "An anime illustration of a girl reading a book by a window, soft afternoon light, potted plants, medium shot."
     },
@@ -68,8 +67,8 @@
     "class_type": "CLIPTextEncode",
     "inputs": {
       "clip": [
-        "1",
-        1
+        "15",
+        0
       ],
       "text": ""
     },
@@ -150,8 +149,8 @@
         0
       ],
       "vae": [
-        "1",
-        2
+        "16",
+        0
       ]
     },
     "_meta": {
@@ -169,6 +168,26 @@
     },
     "_meta": {
       "title": "保存风格结果"
+    }
+  },
+  "15": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3.5_9b_bf16.safetensors",
+      "type": "moss_image",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "MOSS Text Encoder"
+    }
+  },
+  "16": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "_meta": {
+      "title": "MOSS VAE"
     }
   }
 }

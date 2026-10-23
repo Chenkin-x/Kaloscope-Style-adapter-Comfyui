@@ -1,17 +1,18 @@
 {
-  "last_node_id": 14,
+  "last_node_id": 16,
   "last_link_id": 14,
   "nodes": [
     {
       "id": 1,
-      "type": "MOSSImageHFLoader",
+      "type": "UNETLoader",
+      "title": "MOSS Base · Load Diffusion Model",
       "pos": [
         20,
         20
       ],
       "size": [
-        320,
-        180
+        340,
+        140
       ],
       "flags": {},
       "order": 0,
@@ -25,40 +26,21 @@
             1
           ],
           "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            4,
-            5
-          ],
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            13
-          ],
-          "slot_index": 2
         }
       ],
       "properties": {
-        "Node name for S&R": "MOSSImageHFLoader"
+        "Node name for S&R": "UNETLoader"
       },
       "widgets_values": [
-        "models/MOSS-Image-Base",
-        "bf16",
+        "moss_image_base_bf16.safetensors",
         "default"
-      ],
-      "title": "官方 MOSS HF Loader · 选择本机 Base 目录"
+      ]
     },
     {
       "id": 2,
       "type": "KaloscopeStyleAdapterLoader",
       "pos": [
-        20,
+        380,
         280
       ],
       "size": [
@@ -97,7 +79,7 @@
       "id": 3,
       "type": "KaloscopeStyleArtist",
       "pos": [
-        20,
+        380,
         480
       ],
       "size": [
@@ -137,7 +119,7 @@
       "id": 4,
       "type": "KaloscopeStyleApply",
       "pos": [
-        760,
+        1120,
         30
       ],
       "size": [
@@ -187,8 +169,8 @@
       "id": 5,
       "type": "CLIPTextEncode",
       "pos": [
-        380,
-        230
+        740,
+        240
       ],
       "size": [
         320,
@@ -226,8 +208,8 @@
       "id": 6,
       "type": "CLIPTextEncode",
       "pos": [
-        380,
-        400
+        740,
+        460
       ],
       "size": [
         320,
@@ -265,7 +247,7 @@
       "id": 7,
       "type": "EmptyFlux2LatentImage",
       "pos": [
-        760,
+        1120,
         490
       ],
       "size": [
@@ -300,7 +282,7 @@
       "id": 8,
       "type": "KaloscopeMOSSSigmas",
       "pos": [
-        760,
+        1120,
         260
       ],
       "size": [
@@ -334,7 +316,7 @@
       "id": 14,
       "type": "KSamplerSelect",
       "pos": [
-        760,
+        1120,
         690
       ],
       "size": [
@@ -367,7 +349,7 @@
       "id": 9,
       "type": "SamplerCustom",
       "pos": [
-        1130,
+        1490,
         30
       ],
       "size": [
@@ -440,7 +422,7 @@
       "id": 10,
       "type": "VAEDecode",
       "pos": [
-        1490,
+        1850,
         30
       ],
       "size": [
@@ -482,7 +464,7 @@
       "id": 11,
       "type": "SaveImage",
       "pos": [
-        1490,
+        1850,
         230
       ],
       "size": [
@@ -514,6 +496,75 @@
         "KaloscopeMOSS/artist_name_step8500"
       ],
       "title": "保存风格结果"
+    },
+    {
+      "id": 15,
+      "type": "CLIPLoader",
+      "title": "MOSS Text Encoder",
+      "pos": [
+        20,
+        210
+      ],
+      "size": [
+        340,
+        170
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            4,
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen3.5_9b_bf16.safetensors",
+        "moss_image",
+        "default"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "VAELoader",
+      "title": "MOSS VAE",
+      "pos": [
+        20,
+        430
+      ],
+      "size": [
+        340,
+        110
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "flux2-vae.safetensors"
+      ]
     }
   ],
   "links": [
@@ -543,16 +594,16 @@
     ],
     [
       4,
-      1,
-      1,
+      15,
+      0,
       5,
       0,
       "CLIP"
     ],
     [
       5,
-      1,
-      1,
+      15,
+      0,
       6,
       0,
       "CLIP"
@@ -615,8 +666,8 @@
     ],
     [
       13,
-      1,
-      2,
+      16,
+      0,
       10,
       1,
       "VAE"

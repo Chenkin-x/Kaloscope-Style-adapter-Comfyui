@@ -27,3 +27,9 @@ python scripts/migrate_workflow.py old_workflow.json new_workflow.json
 同一脚本也可处理UI JSON。它拒绝覆盖原文件或已有输出；转换只写入指定的新文件。已迁移的工作流再次执行不会改变含义。也可直接使用 `examples/release/` 的当前示例。
 
 节点菜单只注册当前功能名称。底层模型格式标记在内部兼容读取中保留，因此无需重新导出已下载权重。
+
+## MOSS 原生加载
+
+当前示例使用 ComfyUI 内置的 Load Diffusion Model、CLIPLoader（type=`moss_image`）和 VAELoader。下载官方单文件Base、文本编码器和VAE后，在示例中选择对应文件即可。
+
+旧HF目录加载节点作为兼容入口保留并隐藏，不会把旧目录自动改造成单文件模型。原工作流仍需原HF插件；切换到原生加载请导入当前MOSS示例。旧工作流中的独立采样补丁不要照搬：核心MOSS的时间步倍率为1，直接使用默认设置；Apply Style已处理负分支skip22。

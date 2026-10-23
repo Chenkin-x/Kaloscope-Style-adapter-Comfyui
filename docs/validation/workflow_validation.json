@@ -3,7 +3,7 @@
     "ui": 8,
     "api": 8
   },
-  "schema_source": "Recorded ComfyUI 8189 object_info + actual public node schemas, read-only",
+  "schema_source": "Recorded generic-node schema + current official core loader classes and plugin classes; MOSS file choices checked against official HF inventory, not asserted installed",
   "checks": [
     "required inputs",
     "installed model choices",

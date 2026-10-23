@@ -12,7 +12,7 @@ from kaloscope_style.adapter import StyleAdapter
 from kaloscope_style.checkpoint import export_checkpoint,load_adapter
 from kaloscope_style.features import normalized
 with patch.dict(sys.modules,{'folder_paths':types.SimpleNamespace(models_dir='/models')}):
-    from kaloscope_style.moss import MOSSAfterBlock,MOSSStyleGuidance,moss_cond_batch,KaloscopeMOSSBaseLoader
+    from kaloscope_style.moss import MOSSAfterBlock,MOSSStyleGuidance,moss_cond_batch,KaloscopeMOSSBaseLoader,apply_moss
 
 
 class MOSSTests(unittest.TestCase):
@@ -85,6 +85,59 @@ class MOSSTests(unittest.TestCase):
     def test_base_loader_defaults_to_base_and_explains_missing_dependency(self):
         self.assertEqual(KaloscopeMOSSBaseLoader.INPUT_TYPES()['required']['model_path'][1]['default'],'MOSS-Image-Base')
         with patch.dict(sys.modules,{'nodes':types.SimpleNamespace(NODE_CLASS_MAPPINGS={})}):
-            with self.assertRaisesRegex(RuntimeError,'official MOSS'):KaloscopeMOSSBaseLoader().load()
+            with self.assertRaisesRegex(RuntimeError,'native ComfyUI'):KaloscopeMOSSBaseLoader().load()
+
+
+
+class NativeMOSSApplyTests(unittest.TestCase):
+    def patcher(self, name='MOSSImage', multiplier=1.0):
+        base=type(name, (), {})()
+        base.layers=[None]*42
+        base.video_embedder=types.SimpleNamespace(out_features=3072)
+        base.latent_channels=128
+        class FakePatcher:
+            def __init__(self):self.model_options={};self.patches={};self.additional={}
+            def get_model_object(self,key):return base if key=='diffusion_model' else types.SimpleNamespace(multiplier=multiplier)
+            def clone(self):return FakePatcher()
+            def set_model_patch_replace(self,fn,kind,block,index):self.patches[(kind,block,index)]=fn
+            def set_additional_models(self,key,models):self.additional[key]=models
+            def set_model_sampler_calc_cond_batch_function(self,fn):self.model_options['sampler_calc_cond_batch_function']=fn
+            def set_model_sampler_cfg_function(self,fn,**kwargs):self.model_options['sampler_cfg_function']=fn
+        return FakePatcher()
+
+    def bundle(self):
+        return {'adapter':object(),'patcher':object(),'step':8500,'config':{'injection_indices':list(range(42)),'injection_slots':[i*4//42 for i in range(42)]}}
+
+    def test_native_and_legacy_backends_keep_correct_timestep_conventions(self):
+        for name,multiplier in [('MOSSImage',1.0),('MOSSImageTransformer',1000.0)]:
+            original=self.patcher(name,multiplier)
+            clone=apply_moss(original,self.bundle(),torch.ones(1,256),6,1)
+            self.assertEqual(len(clone.patches),42)
+            self.assertEqual(original.model_options,{})
+            self.assertEqual(clone.model_options['kaloscope_style']['uncond_skip_layers'],[22])
+
+    def test_wrong_native_sampling_multiplier_is_rejected(self):
+        with self.assertRaisesRegex(ValueError,'ModelSamplingAuraFlow'):
+            apply_moss(self.patcher(multiplier=1000),self.bundle(),torch.ones(1,256),6,1)
+
+    def test_zero_style_retains_negative_skip_without_adapter_patches(self):
+        clone=apply_moss(self.patcher(),self.bundle(),torch.ones(1,256),0,1)
+        self.assertEqual(clone.patches,{})
+        self.assertIn('sampler_calc_cond_batch_function',clone.model_options)
+        self.assertEqual(clone.model_options['sampler_cfg_function'].style_cfg,0)
+
+    def test_native_examples_use_core_loaders_and_correct_components(self):
+        root=Path(__file__).resolve().parents[1]/'examples/release'
+        for path in root.glob('Kaloscope_moss_*_api.json'):
+            graph=json.loads(path.read_text())
+            self.assertEqual(graph['1']['class_type'],'UNETLoader')
+            self.assertEqual(graph['1']['inputs']['unet_name'],'moss_image_base_bf16.safetensors')
+            self.assertEqual(graph['15']['class_type'],'CLIPLoader')
+            self.assertEqual(graph['15']['inputs']['type'],'moss_image')
+            self.assertEqual(graph['16']['class_type'],'VAELoader')
+            self.assertNotIn('MOSSImageHFLoader',{n['class_type'] for n in graph.values()})
+            self.assertNotIn('ModelSamplingSD3',{n['class_type'] for n in graph.values()})
+            self.assertEqual(graph['5']['inputs']['clip'],['15',0])
+            self.assertEqual(graph['10']['inputs']['vae'],['16',0])
 
 if __name__=='__main__':unittest.main()
