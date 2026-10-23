@@ -90,9 +90,7 @@ ComfyUI/models/
 
 推荐从 [Hugging Face 的 workflows 目录](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/tree/main/workflows) 导入，已匹配本次公开权重名称和独立编码器加载节点。Raw、Turbo 各提供名称、参考图、加权画师三种入口；MOSS 提供名称与参考图，共 8 套 UI 工作流及对应 API JSON。本仓库 `examples/release/` 保留原始检查点文件名，使用公开权重时请在节点中重新选择相应文件；更早的示例保留历史参数。
 
-**VAE没有参与微调。** Raw/Turbo示例直接使用官方 `VAELoader`，默认文件为 `qwen_image_vae.safetensors`；可从下拉框选择本机同型号VAE，不再要求 `krea2_z3_vae` 别名。后者此前只是软链接。不要改成SDXL/Flux等不兼容的VAE。
-
-Krea2底模和文本继续使用原生 `UNETLoader` / `CLIPLoader(type=krea2)`；采样、解码、保存复用通用节点。`KaloscopeZ3Sigmas`保留Raw分辨率调度与Turbo固定μ=1.15，不能假定任意KSampler时间表等价。
+Krea2底模和文本继续使用原生 `UNETLoader` / `CLIPLoader(type=krea2)`；采样、解码、保存复用通用节点。`KaloscopeZ3Sigmas`保留Raw分辨率调度与Turbo固定μ=1.15。
 
 MOSS新示例直接使用官方插件 `MOSSImageHFLoader`，将路径改为本机MOSS-Image-Base目录。旧`KaloscopeMOSSBaseLoader`继续兼容已有工作流。当前验证环境的HF插件与更新版ComfyUI内置MOSS后端接口不同，尚未验证该adapter在后者上的补丁与数值等价性，不能只替换成UNETLoader就视为兼容。参考[官方MOSS接口说明](https://github.com/OpenMOSS/MOSS-Image/blob/main/comfyui/README.md)与[官方Krea2 VAE说明](https://github.com/Comfy-Org/docs/blob/main/tutorials/image/krea/krea-2.mdx)。
 
