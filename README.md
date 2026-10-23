@@ -57,7 +57,7 @@ python Kaloscope-style-adapter/install_models.py --comfyui "/path/to/ComfyUI" --
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/222222222l/Kaloscope-Style-adapter-Comfyui.git
+git clone https://github.com/Chenkin-x/Kaloscope-Style-adapter-Comfyui.git
 # 使用运行 ComfyUI 的 Python；便携版请换成 python_embeded/python.exe
 python -m pip install -r Kaloscope-Style-adapter-Comfyui/requirements.txt
 ```
