@@ -105,7 +105,7 @@ python Kaloscope-style-adapter/install_models.py --comfyui "/path/to/ComfyUI" --
 | Adapter strength | 1 | 1 | 1 |
 | 时间表 | Raw 分辨率调度 | Turbo，固定 μ=1.15 | MOSS，shift=5 |
 
-可从 512×512 开始，宽高使用64的倍数。Raw/Turbo 可固定种子比较强度1和0.8。风格强度或风格CFG设为0可生成底模对照。
+可从 512×512 开始，宽高使用64的倍数。Raw/Turbo 可固定种子比较强度1和0.8，强度1能取得更好的风格参考效果但角色肢体和画面构图的不稳定性会增加，turbo在8步采样下可能出现降噪不完全现象，可以将采样步数提升至12步。风格强度或风格CFG设为0可生成底模对照。
 
 Raw/Turbo 使用单帧 `EmptyHunyuanLatentVideo`；MOSS 使用 `EmptyFlux2LatentImage`。工作流中的时间表与风格注入节点需要配套使用。
 
