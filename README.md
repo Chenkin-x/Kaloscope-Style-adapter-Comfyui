@@ -2,7 +2,7 @@
 
 为 **Krea-2-Raw、Krea-2-Turbo 和 MOSS-Image-Base** 提供画师名称、多画师融合和参考图风格生成。
 
-本包专用于图像生成。画师名称反推与特征分析请使用 [comfyui-kaloscope](https://github.com/spawner1145/comfyui-kaloscope)；两者可同时安装，并共享匹配的 Kaloscope artist-v1 编码器。
+本包专用于图像生成。画师名称反推与特征分析请使用 [comfyui-kaloscope](https://github.com/Chenkin-x/comfyui-kaloscope)；两者可同时安装，并共享匹配的 Kaloscope artist-v1 编码器。
 
 | 资源 | 链接 |
 | --- | --- |
