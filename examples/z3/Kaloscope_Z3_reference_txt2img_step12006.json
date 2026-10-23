@@ -102,13 +102,13 @@
         "Node name for S&R": "VAELoader"
       },
       "widgets_values": [
-        "krea2_z3_vae.safetensors"
+        "qwen_image_vae.safetensors"
       ]
     },
     {
       "id": 4,
-      "type": "KaloscopeModelLoader",
-      "title": "Matching Z3 artist encoder",
+      "type": "KaloscopeZ3EncoderLoader",
+      "title": "Kaloscope Adapter · Shared artist-v1 encoder",
       "pos": [
         0,
         600
@@ -132,7 +132,7 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "KaloscopeModelLoader"
+        "Node name for S&R": "KaloscopeZ3EncoderLoader"
       },
       "widgets_values": [
         "z3_artist_v1",

@@ -1,0 +1,42 @@
+{
+  "tests": [
+    {
+      "folder": "z3_artist_v1",
+      "checkpoint_sha256": "b06d71ba6d655aae035dfb5dc4a32dde4fd0aba00bf553facedd654d8e2e5a64",
+      "images": 2,
+      "input_shape": [
+        2,
+        576,
+        704,
+        3
+      ],
+      "device": "cpu",
+      "dtype": "float32",
+      "old_has_classifier": false,
+      "new_has_classifier": false,
+      "max_abs_error": 0.0,
+      "bitwise_equal": true,
+      "seconds": 7.154
+    },
+    {
+      "folder": "v1-artist-classifier",
+      "checkpoint_sha256": "3e6a971eecc8983047a6e27af8b954368b9ec4fd8bd493f958875210845ef0a1",
+      "images": 2,
+      "input_shape": [
+        2,
+        576,
+        704,
+        3
+      ],
+      "device": "cpu",
+      "dtype": "float32",
+      "old_has_classifier": true,
+      "new_has_classifier": false,
+      "max_abs_error": 0.0,
+      "bitwise_equal": true,
+      "seconds": 6.183
+    }
+  ],
+  "style_only_vs_shared_classifier_bitwise_equal": true,
+  "scope": "Real released weights, two deterministic RGB images, center-crop512, CPU FP32. No GPU generation or throughput claim."
+}

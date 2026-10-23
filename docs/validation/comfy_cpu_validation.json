@@ -1,0 +1,10 @@
+{
+  "device": "cpu",
+  "real_comfy_model_patcher_load_encode_unload": true,
+  "output_shape": [
+    1,
+    256
+  ],
+  "norm": 1.0000001192092896,
+  "gpu_inference_tested": false
+}

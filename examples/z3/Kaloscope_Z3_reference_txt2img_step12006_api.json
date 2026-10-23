@@ -23,20 +23,20 @@
   "3": {
     "class_type": "VAELoader",
     "inputs": {
-      "vae_name": "krea2_z3_vae.safetensors"
+      "vae_name": "qwen_image_vae.safetensors"
     },
     "_meta": {
       "title": "Krea2 Qwen/Wan VAE"
     }
   },
   "4": {
-    "class_type": "KaloscopeModelLoader",
+    "class_type": "KaloscopeZ3EncoderLoader",
     "inputs": {
       "model_folder": "z3_artist_v1",
       "device": "cuda"
     },
     "_meta": {
-      "title": "Matching Z3 artist encoder"
+      "title": "Kaloscope Adapter · Shared artist-v1 encoder"
     }
   },
   "5": {

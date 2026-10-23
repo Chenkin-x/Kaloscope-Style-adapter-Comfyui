@@ -1,0 +1,16 @@
+{
+  "counts": {
+    "ui": 8,
+    "api": 8
+  },
+  "schema_source": "Recorded ComfyUI 8189 object_info + actual standalone loader schema, read-only",
+  "checks": [
+    "required inputs",
+    "installed model choices",
+    "output types",
+    "reciprocal UI links",
+    "UI/API link parity",
+    "no legacy VAE alias"
+  ],
+  "inference_submitted": false
+}

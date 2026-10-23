@@ -135,7 +135,7 @@
     },
     {
       "id": 12,
-      "type": "KaloscopeModelLoader",
+      "type": "KaloscopeZ3EncoderLoader",
       "pos": [
         20,
         790
@@ -159,13 +159,13 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "KaloscopeModelLoader"
+        "Node name for S&R": "KaloscopeZ3EncoderLoader"
       },
       "widgets_values": [
         "z3_artist_v1",
         "cuda"
       ],
-      "title": "训练匹配 DINO artist-v1"
+      "title": "Kaloscope Adapter · Shared artist-v1 encoder"
     },
     {
       "id": 13,

@@ -1,36 +1,12 @@
 # Z3 中间检查点：ComfyUI 风格迁移
 
-这是基于 `spawner1145/comfyui-kaloscope` 提交 `1f1f12d4103fd10c6f890ecf197a0e280d1979d5` 的扩展版。
-新增代码集中在 `kaloscope_style/`，沿用原插件节点注册、`KALOSCOPE_MODEL`、`IMAGE`、`TENSOR` 接口。
-可加载当前全量训练的 Z3 中间检查点，用参考图提供画风，不需要画师名称。
+本文保留 step12006 时期的实验设置和历史验证，不作为当前发布模型的默认参数。当前使用 Raw63006 / Turbo33000 / MOSS8500，优先阅读 [主说明](README.md) 并导入 `examples/release/`。
 
-## 安装
+## 安装与共享编码器
 
-1. 备份现有 `ComfyUI/custom_nodes/comfyui-kaloscope`，用本扩展版替换该目录；不要同时安装两份同名节点。
-2. 使用 ComfyUI 自己的 Python 安装原仓库 `requirements.txt`。本扩展不引入新的推理框架，不需要训练仓库或 musubi-tuner。
-3. ComfyUI 必须支持原生 Krea2：`CLIPLoader` 的类型列表里要有 `krea2`。此次验证使用 ComfyUI 提交 `0df64eb242b7c5759c3e86afd5d1846d923b1033`。
-4. 放置模型，重启 ComfyUI。Windows 便携版同样使用以下相对目录。
+按[独立包安装说明](README.md#安装)安装本包，可与原版画师反推插件并存。编码器复用 `models/kaloscope/<已有目录>/`，既可使用新 `KaloscopeZ3EncoderLoader`，也可将原 `KaloscopeModelLoader` 的输出直接连到参考图编码节点。无需复制模型。历史合并扩展版需按[迁移指南](docs/MIGRATION_ZH.md)去除重复注册。
 
-```text
-ComfyUI/
-  custom_nodes/comfyui-kaloscope/
-    __init__.py
-    kaloscope_style/
-    ...原插件文件
-  models/
-    diffusion_models/raw.safetensors              # 训练所用 Krea2 原版主模型
-    text_encoders/qwen3vl_4b_bf16.safetensors
-    vae/vae.safetensors                           # Krea2 对应的 Qwen/Wan VAE
-    kaloscope/z3_artist_v1/
-      config.json
-      model.safetensors                          # 训练匹配的 DINOv3 artist v1
-    kaloscope_z3/z3_step12006.safetensors          # Z3 adapter，可放多个版本
-```
-
-Z3 adapter 约 53 MB，包含风格 adapter，不含 Krea2 主模型或 DINO。DINO 必须使用训练匹配的 artist v1；
-同为 256 维的其他 DINO projector 也可能给出错误风格，不能仅凭维度判定兼容。
-本次提供了从实际训练编码器导出的 `z3_artist_v1`，无需 class mapping 或画师名。
-当前配套文件是 step 12006，不是训练目录中按余弦选出的 `best.pt`。
+DINO 必须匹配训练使用的 artist-v1；同为256维不代表特征空间兼容。VAE使用官方 `VAELoader` 选择 `qwen_image_vae.safetensors`，没有随adapter微调。
 
 ## 开始测试
 
@@ -107,14 +83,7 @@ BF16 原版 Krea2 是验证目标。FP8/GGUF、编译、第三方模型替换、
 - 真实 ComfyUI HTTP 队列验证通过，完整工作流和关闭风格的基线均生成 512×512 图像；两者确实不同。
 - 验证使用单张 H100 和 BF16 原版 Krea2，Windows、低显存 offload、量化模型组合未实机验证。
 
-```bash
-python -m unittest discover -s tests -p test_z3.py
-python -m unittest discover -s tests -p test_model_loading.py
-```
-
-合并时新增 `kaloscope_style/`、`scripts/export_z3.py`、`tests/test_z3.py`、示例工作流与本文档，
-再合并根 `__init__.py` 的三行节点注册和原节点测试的新增节点断言即可。
-原模型加载、分类、聚类、特征分析实现保持原样。没有向上游推送代码或提交 PR。
+上述记录来自早期合并版。当前独立包使用 `python -m unittest discover -s tests -v` 验证；旧模型加载/分析测试随原插件维护，当前包不再包含这些模块。
 
 ## 2026-10-10：名称条件与分辨率采样
 
@@ -126,4 +95,4 @@ python -m unittest discover -s tests -p test_model_loading.py
 
 新增示例 `examples/z3/Kaloscope_Z3_artist_name_txt2img_step12006.json`；主模型、adapter 权重不变。当前数值/接口验证通过 8 项 Z3 测试和 24 项原节点回归测试。完整出图及质量结果以新增验证记录为准。
 
-Turbo 调试：Sigmas 的 `model_variant` 选 `turbo`，使用固定 mu=1.15、8 步、start_sigma=1。普通 SamplerCustom CFG 先设 1，Apply Style 的 style_guidance 先设 1，adapter_strength 可比较 0.25/0.5/0.75/1。这只是迁移诊断配置，当前 Raw adapter 的 Turbo 风格质量尚未验证。Raw 默认无需更改。
+Turbo 调试：Sigmas 的 `model_variant` 选 `turbo`，使用固定 mu=1.15、8 步、start_sigma=1。普通 SamplerCustom CFG 先设 1，Apply Style 的 style_guidance 先设 1，adapter_strength 可比较 0.25/0.5/0.75/1。这只是迁移诊断配置，这是早期 Raw→Turbo 迁移的历史诊断记录；当前发布使用专门适配后的 Turbo33000，见主说明。Raw 默认无需更改。

@@ -103,7 +103,7 @@
         "Node name for S&R": "VAELoader"
       },
       "widgets_values": [
-        "krea2_z3_vae.safetensors"
+        "qwen_image_vae.safetensors"
       ]
     },
     {

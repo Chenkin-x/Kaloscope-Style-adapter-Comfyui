@@ -100,16 +100,16 @@ class ArtistRouteTests(unittest.IsolatedAsyncioTestCase):
         await self.client.close();self.temp.cleanup()
 
     async def test_search_and_csv_download_use_selected_bank(self):
-        response = await self.client.get('/kaloscope/style/artists', params={'bank':'bank.safetensors','q':'fky'})
+        response = await self.client.get('/kaloscope-adapter/artists', params={'bank':'bank.safetensors','q':'fky'})
         self.assertEqual(response.status, 200)
         data=await response.json();self.assertEqual(data['results'][0]['name'],'fkey');self.assertTrue(data['available'])
-        response=await self.client.get('/kaloscope/style/artists/catalog.csv',params={'bank':'bank.safetensors'})
+        response=await self.client.get('/kaloscope-adapter/artists/catalog.csv',params={'bank':'bank.safetensors'})
         content=(await response.read()).decode('utf-8-sig')
         self.assertEqual([r['name'] for r in csv.DictReader(io.StringIO(content))], ['fkey','aaru_(one)','aaru_(two)'])
 
     async def test_invalid_names_paths_and_limits_fail_without_file_access(self):
         for params in [{'bank':'../../secret'}, {'bank':str(self.path)}, {'limit':'abc'}, {'limit':'9999'}, {'q':'x'*161}]:
-            response=await self.client.get('/kaloscope/style/artists',params=params)
+            response=await self.client.get('/kaloscope-adapter/artists',params=params)
             self.assertEqual(response.status,400,params)
             self.assertIn('error',await response.json())
 

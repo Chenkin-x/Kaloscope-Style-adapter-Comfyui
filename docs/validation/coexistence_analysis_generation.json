@@ -1,0 +1,17 @@
+{
+  "import_order": [
+    "analysis",
+    "generation"
+  ],
+  "analysis_nodes": 10,
+  "generation_nodes": 10,
+  "duplicate_node_ids": [],
+  "same_model_folders": [
+    "z3_artist_v1"
+  ],
+  "same_socket": true,
+  "generation_routes": [
+    "/kaloscope-adapter/artists",
+    "/kaloscope-adapter/artists/catalog.csv"
+  ]
+}

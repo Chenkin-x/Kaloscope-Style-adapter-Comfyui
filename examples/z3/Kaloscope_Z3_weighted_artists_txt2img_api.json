@@ -23,7 +23,7 @@
   "3": {
     "class_type": "VAELoader",
     "inputs": {
-      "vae_name": "krea2_z3_vae.safetensors"
+      "vae_name": "qwen_image_vae.safetensors"
     },
     "_meta": {
       "title": "Krea2 Qwen/Wan VAE"

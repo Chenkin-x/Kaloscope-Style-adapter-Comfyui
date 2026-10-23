@@ -30,13 +30,13 @@
     }
   },
   "4": {
-    "class_type": "KaloscopeModelLoader",
+    "class_type": "KaloscopeZ3EncoderLoader",
     "inputs": {
       "model_folder": "z3_artist_v1",
       "device": "cuda"
     },
     "_meta": {
-      "title": "Matching Z3 artist encoder"
+      "title": "Kaloscope Adapter · Shared artist-v1 encoder"
     }
   },
   "5": {

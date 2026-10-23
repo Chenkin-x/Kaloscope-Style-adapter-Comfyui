@@ -4,6 +4,8 @@
 
 原 `Kaloscope Z3 Checkpoint Loader` 和 `Kaloscope Z3 Apply Style` 现在同时支持 Krea2 与 MOSS。MOSS adapter 为42层、3072宽、4个共享bank，共7,017,216个参数；按训练实现 `floor(layer_index*4/42)` 分配bank，仅修改图像token。两种底模的adapter不可混用。
 
+发布版优先使用 `examples/release/Kaloscope_moss8500_*.json`，直接连接官方 `MOSSImageHFLoader`，默认路径 `models/MOSS-Image-Base` 相对 ComfyUI 工作目录；也可填写绝对路径。下述旧包装节点保留兼容，不需要迁移已有图。
+
 ## 文件与工作流
 
 ```text

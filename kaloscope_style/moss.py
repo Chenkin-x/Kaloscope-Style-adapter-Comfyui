@@ -18,7 +18,7 @@ class KaloscopeMOSSBaseLoader:
 
     RETURN_TYPES = ('MODEL', 'CLIP', 'VAE')
     FUNCTION = 'load'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter/MOSS'
 
     def load(self, model_path='MOSS-Image-Base', weight_dtype='bf16', text_device='default'):
         import nodes
@@ -42,7 +42,7 @@ class KaloscopeMOSSZ3Sigmas:
 
     RETURN_TYPES = ('SIGMAS',)
     FUNCTION = 'schedule'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter/MOSS'
 
     def schedule(self, steps=50, shift=5.):
         if not 1 <= steps <= 1000 or not math.isfinite(shift) or shift <= 0:

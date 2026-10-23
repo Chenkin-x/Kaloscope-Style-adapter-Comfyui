@@ -43,7 +43,7 @@ function openArtistSearch(node, inputName) {
     results.id = "kaloscope-artist-results";
     const footer = element("div", "ks-footer");
     const download = element("a", "", "下载 CSV / Download CSV");
-    download.href = api.apiURL("/kaloscope/style/artists/catalog.csv?" + new URLSearchParams({ bank }));
+    download.href = api.apiURL("/kaloscope-adapter/artists/catalog.csv?" + new URLSearchParams({ bank }));
     download.download = "kaloscope_artists.csv";
     footer.append(download, element("span", "", "保留括号以区分同名画师 / Keep name suffixes"));
     dialog.append(header, source, input, status, results, footer);
@@ -87,7 +87,7 @@ function openArtistSearch(node, inputName) {
         status.textContent = "正在检索 / Searching…";
         try {
             const params = new URLSearchParams({ bank, q: input.value.trim(), limit: "40" });
-            const response = await api.fetchApi("/kaloscope/style/artists?" + params, { signal: controller.signal });
+            const response = await api.fetchApi("/kaloscope-adapter/artists?" + params, { signal: controller.signal });
             const data = await response.json();
             if (id !== requestId || !dialog.open) return;
             if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);

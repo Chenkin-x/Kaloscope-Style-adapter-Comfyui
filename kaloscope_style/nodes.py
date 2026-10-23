@@ -1,4 +1,4 @@
-"""Legacy Comfy node registration, matching comfyui-kaloscope's existing API."""
+"""Generation nodes with shared Kaloscope model-folder and socket compatibility."""
 import json
 import math
 from pathlib import Path
@@ -27,7 +27,7 @@ class KaloscopeZ3ArtistStyle:
     RETURN_TYPES = ('TENSOR', 'STRING')
     RETURN_NAMES = ('style_features', 'artist_info')
     FUNCTION = 'lookup'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter'
 
     @classmethod
     def IS_CHANGED(cls, bank, artist_name):
@@ -52,7 +52,7 @@ class KaloscopeZ3ArtistMix:
     RETURN_TYPES = ('TENSOR', 'STRING')
     RETURN_NAMES = ('style_features', 'artist_info')
     FUNCTION = 'mix'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter'
 
     @classmethod
     def IS_CHANGED(cls, bank, artist_tags):
@@ -82,7 +82,7 @@ class KaloscopeZ3Loader:
     RETURN_TYPES = ('KALOSCOPE_Z3_ADAPTER', 'STRING')
     RETURN_NAMES = ('adapter', 'checkpoint_info')
     FUNCTION = 'load'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter'
 
     @classmethod
     def IS_CHANGED(cls, checkpoint):
@@ -112,7 +112,7 @@ class KaloscopeZ3EncodeReference:
     RETURN_TYPES = ('TENSOR',)
     RETURN_NAMES = ('style_features',)
     FUNCTION = 'encode'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter'
 
     def encode(self, reference_images, model):
         return (encode(reference_images, model),)
@@ -127,7 +127,7 @@ class KaloscopeZ3BlendFeatures:
     RETURN_TYPES = ('TENSOR',)
     RETURN_NAMES = ('blended_style',)
     FUNCTION = 'mix'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter'
 
     def mix(self, features, weights='', features_b=None, features_c=None):
         from .features import normalized
@@ -145,7 +145,7 @@ class KaloscopeZ3Apply:
 
     RETURN_TYPES = ('MODEL',)
     FUNCTION = 'apply'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter'
 
     def apply(self, model, adapter, style_features, style_guidance=5.5, adapter_strength=1.):
         if adapter['backend'] == 'moss':
@@ -188,13 +188,16 @@ class KaloscopeZ3Sigmas:
 
     RETURN_TYPES = ('SIGMAS',)
     FUNCTION = 'schedule'
-    CATEGORY = 'Kaloscope/Style Transfer'
+    CATEGORY = 'Kaloscope Adapter'
 
     def schedule(self, steps=28, start_sigma=.85, latent=None, model_variant='raw'):
         return (sigma_schedule(steps, start_sigma, latent, model_variant),)
 
 
+from .encoder import KaloscopeZ3EncoderLoader
+
 NODE_CLASS_MAPPINGS = {
+    'KaloscopeZ3EncoderLoader': KaloscopeZ3EncoderLoader,
     'KaloscopeZ3ArtistStyle': KaloscopeZ3ArtistStyle,
     'KaloscopeZ3ArtistMix': KaloscopeZ3ArtistMix,
     'KaloscopeZ3Loader': KaloscopeZ3Loader,
@@ -204,6 +207,7 @@ NODE_CLASS_MAPPINGS = {
     'KaloscopeZ3Sigmas': KaloscopeZ3Sigmas,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
+    'KaloscopeZ3EncoderLoader': 'Kaloscope Adapter · Style Encoder Loader',
     'KaloscopeZ3ArtistStyle': 'Kaloscope Z3 Artist Name Style',
     'KaloscopeZ3ArtistMix': 'Kaloscope Z3 Weighted Artist Mix',
     'KaloscopeZ3Loader': 'Kaloscope Z3 Checkpoint Loader',

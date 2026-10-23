@@ -49,6 +49,9 @@ def encode(images, bundle):
         raise ValueError('Load the training-matched DINOv3 artist encoder with a 256-dimensional projector.')
     if images.ndim != 4 or images.shape[-1] != 3 or not len(images) or not torch.isfinite(images).all():
         raise ValueError('Reference images must be finite RGB IMAGE tensors [N,H,W,3].')
+    if bundle.get('patcher') is not None:
+        from comfy import model_management
+        model_management.load_models_gpu([bundle['patcher']])
     device = next(model.parameters()).device
     result = []
     for image in images:

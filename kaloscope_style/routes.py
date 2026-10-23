@@ -18,7 +18,7 @@ def register_routes(routes, bank_paths):
             raise ValueError('Selected artist bank is not installed. Refresh the bank list.')
         return artist_index(path)
 
-    @routes.get('/kaloscope/style/artists')
+    @routes.get('/kaloscope-adapter/artists')
     async def search(request):
         try:
             limit = int(request.query.get('limit', '40'))
@@ -32,7 +32,7 @@ def register_routes(routes, bank_paths):
         except (ValueError, FileNotFoundError, KeyError, SafetensorError) as exc:
             return web.json_response({'error': str(exc)}, status=400)
 
-    @routes.get('/kaloscope/style/artists/catalog.csv')
+    @routes.get('/kaloscope-adapter/artists/catalog.csv')
     async def download(request):
         try:
             def render():
