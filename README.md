@@ -1,6 +1,6 @@
 # Kaloscope Style Adapter for ComfyUI
 
-Krea2 Raw / Turbo 与 MOSS Z3 风格适配节点，支持画师名称、加权多画师和参考图条件。
+Krea2 Raw / Turbo 与 MOSS 风格适配节点，支持画师名称、加权多画师和参考图条件。
 **2.0.0：独立生图节点包**，保留原有 `KaloscopeZ3*` 节点 ID 与工作流接口。基于 [comfyui-kaloscope](https://github.com/spawner1145/comfyui-kaloscope) 整理。
 
 ## 与 comfyui-kaloscope 的关系
@@ -15,6 +15,41 @@ Krea2 Raw / Turbo 与 MOSS Z3 风格适配节点，支持画师名称、加权�
 新包不包含 LSNet 或画师分类/聚类节点，只保留参考图生图必需的 DINOv3 编码实现。两个包共享 `models/kaloscope/<目录>/` 中训练匹配的 v1 权重，无需重复下载；原加载器的 `KALOSCOPE_MODEL` 输出也能直接连接本包参考图节点。纯名称生图使用风格原型库，无需运行 DINO。
 
 此前同时包含反推和 adapter 的**合并扩展版**需要按[迁移说明](docs/MIGRATION_ZH.md)去除重复注册。来源及许可边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)，拆分后的测试证据见[验证记录](docs/VALIDATION_ZH.md)。
+
+## 模型下载与效果展示
+
+模型现已发布于 **[Hugging Face · Kaloscope Style Adapter](https://huggingface.co/heathcliff01/Kaloscope-style-adapter)**。本代码仓库继续保持私有，安装节点需要仓库访问权限；模型权重、配套资源和模型卡公开提供。
+
+| 模型 | 底模 | 权重下载 | 模型卡 |
+| --- | --- | --- | --- |
+| Krea Kaloscope Raw | Krea-2-Raw | [下载](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Krea-Kaloscope-Raw.safetensors?download=true) | [查看](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/raw/README.md) |
+| Krea Kaloscope Turbo | Krea-2-Turbo BF16 | [下载](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Krea-Kaloscope-Turbo.safetensors?download=true) | [查看](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/turbo/README.md) |
+| Kaloscope MOSS | MOSS-Image-Base | [下载](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Kaloscope-MOSS.safetensors?download=true) | [查看](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/moss/README.md) |
+
+名称及名称融合需下载 [artist-v1 风格库](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/style-bank/artist-v1.safetensors?download=true)；参考图入口需下载 [artist-v1 编码器目录](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/tree/main/encoder/artist-v1) 内的配置、权重和许可。原版底模、文本编码器与 VAE 另行安装。
+
+也可下载模型仓库后，用其安装脚本复制到兼容目录：
+
+```bash
+hf download heathcliff01/Kaloscope-style-adapter --local-dir Kaloscope-style-adapter
+python Kaloscope-style-adapter/install_models.py --comfyui "/path/to/ComfyUI" --variant turbo --with-encoder
+```
+
+`--variant` 可选 `raw`、`turbo`、`moss` 或 `all`；纯名称入口可省略 `--with-encoder`。脚本只复制已下载的模型文件，校验权重，不安装节点或底模，不覆盖内容不同的已有文件。插件的内部目录和节点 ID 保留兼容名称，公开模型名称与此独立。
+
+### 画师名称生成
+
+![画师名称生成](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/images/artist-name.jpg)
+
+### 多画师融合
+
+![多画师融合](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/images/artist-mix.jpg)
+
+### 参考图生成
+
+![参考图生成](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/images/reference.jpg)
+
+以上图墙直接拼接现有 ComfyUI 原图，仅保留生成方式与艺术家名称。名称和融合展示来自 Turbo，参考图展示包含 Raw 与 Turbo 输出，不作为 MOSS 效果或同条件基准。
 
 ## 安装
 
@@ -31,9 +66,9 @@ ComfyUI 需要提供原生 Krea2 / MOSS 模型支持；本包不替代底模、�
 
 ```text
 ComfyUI/models/
-  kaloscope_z3/                 # Z3 adapter .safetensors，可同时保留多个检查点
-  kaloscope_style_banks/        # 如 z3_artist_v1_recent.safetensors
-  kaloscope/z3_artist_v1/       # 参考图编码器：config.json + model.safetensors
+  kaloscope_z3/                 # 兼容目录；放置 Krea-Kaloscope-Raw/Turbo 或 Kaloscope-MOSS.safetensors
+  kaloscope_style_banks/        # artist-v1.safetensors
+  kaloscope/artist-v1/          # 参考图编码器：config.json + model.safetensors + LICENSE.md
   diffusion_models/            # Krea2 Raw / BF16 Turbo，或对应 MOSS 底模
   text_encoders/               # 对应底模的文本编码器
   vae/                         # 对应底模的 VAE
@@ -53,7 +88,7 @@ ComfyUI/models/
 
 ## 发布工作流（2026-10-23 独立包更新）
 
-推荐从 `examples/release/` 导入：Raw63006、Turbo33000各提供名称、参考图、加权画师三种入口；MOSS8500提供名称与参考图，共8套UI工作流及对应API JSON。旧示例保留历史参数。
+推荐从 [Hugging Face 的 workflows 目录](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/tree/main/workflows) 导入，已匹配本次公开权重名称和独立编码器加载节点。Raw、Turbo 各提供名称、参考图、加权画师三种入口；MOSS 提供名称与参考图，共 8 套 UI 工作流及对应 API JSON。本仓库 `examples/release/` 保留原始检查点文件名，使用公开权重时请在节点中重新选择相应文件；更早的示例保留历史参数。
 
 **VAE没有参与微调。** Raw/Turbo示例直接使用官方 `VAELoader`，默认文件为 `qwen_image_vae.safetensors`；可从下拉框选择本机同型号VAE，不再要求 `krea2_z3_vae` 别名。后者此前只是软链接。不要改成SDXL/Flux等不兼容的VAE。
 
@@ -136,4 +171,4 @@ python -m unittest discover -s tests -v
 
 ## 许可
 
-沿用上游 GPL-3.0，见 [LICENSE](LICENSE)。私有命名空间中的 DINOv3 源码保留其版权声明与[单独许可](kaloscope_style/_vendor/dinov3/LICENSE.md)；不将这些文件重新标为 GPL。来源与模块边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。模型权重适用各自许可。
+沿用上游 GPL-3.0，见 [LICENSE](LICENSE)。私有命名空间中的 DINOv3 源码保留其版权声明与[单独许可](kaloscope_style/_vendor/dinov3/LICENSE.md)；不将这些文件重新标为 GPL。来源与模块边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。模型权重按底模分别采用上游许可：Krea Kaloscope Raw / Turbo 使用 Krea 2 Community License，Kaloscope MOSS 使用 Apache-2.0，配套 DINOv3 编码器保留 DINOv3 License。具体授权、上游来源与归属声明见 [HF 组件许可](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/LICENSE.md) 和 [NOTICE](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/NOTICE)，不把整个包统一改标为同一种许可。
