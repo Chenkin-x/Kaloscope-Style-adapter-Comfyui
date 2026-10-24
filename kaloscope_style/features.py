@@ -57,9 +57,30 @@ def encode(images, bundle, resize_mode='center_crop'):
         raise ValueError('Load the training-matched DINOv3 artist encoder with a 256-dimensional projector.')
     if images.ndim != 4 or images.shape[-1] != 3 or not len(images) or not torch.isfinite(images).all():
         raise ValueError('Reference images must be finite RGB IMAGE tensors [N,H,W,3].')
-    if bundle.get('patcher') is not None:
+    patcher = bundle.get('patcher')
+    if patcher is not None:
         from comfy import model_management
-        model_management.load_models_gpu([bundle['patcher']])
+        # DINO uses ordinary torch layers, not Comfy's on-demand casting ops.
+        # Partial loading leaves CPU weights behind even if the CLS token is on CUDA.
+        model_management.load_models_gpu([patcher], force_full_load=True)
+        target = torch.device(patcher.load_device)
+        if target.type == 'cuda' and target.index is None:
+            target = torch.device('cuda', torch.cuda.current_device())
+
+        def misplaced():
+            return [name for name, tensor in (*model.named_parameters(), *model.named_buffers())
+                    if tensor.device != target]
+
+        if misplaced():
+            # --novram and cached partial loads can bypass force_full_load.
+            # Use the patcher so loaded-memory accounting and unloading stay valid.
+            logger.warning('Kaloscope reference encoder: completing partial load on %s.', target)
+            patcher.patch_model(device_to=target, lowvram_model_memory=0)
+            remaining = misplaced()
+            if remaining:
+                raise RuntimeError('Reference encoder could not be fully loaded on '
+                                   f'{target}: {", ".join(remaining[:3])}. '
+                                   'Select cpu in Kaloscope Style Encoder Loader and retry.')
     parameter = next(model.parameters())
     device, dtype = parameter.device, parameter.dtype
     # Query the encoder's GPU, which may differ from the current CUDA device.

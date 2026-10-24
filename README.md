@@ -136,6 +136,7 @@ Raw/Turbo 使用单帧 `EmptyHunyuanLatentVideo`；MOSS 使用 `EmptyFlux2Latent
 
 - Adapter需匹配底模，Krea2与MOSS的权重、latent、VAE和时间表不可混用。VAE没有随adapter微调，直接使用对应的官方VAE。
 - 参考图编码器必须匹配artist-v1特征空间；相同输出维度不代表兼容。
+- 参考图编码器会完整加载到所选设备，避免部分卸载导致CPU/GPU权重错配。若显存不足，可将编码器加载节点的 `device` 设为 `cpu`，生成模型仍可使用GPU。
 - 参考图编码会自动选择精度；遇到BF16混合精度类型冲突时，自动回退到编码器原有精度（标准权重为FP32），无需转换或重新下载模型。
 - 风格强度过高可能损害人体和构图。参考图、混合风格和不同种子的效果存在差异。
 - MOSS使用官方加载器的默认模型采样设置；不要额外添加 `ModelSamplingSD3`。Apply Style已包含负分支skip22，不要重复叠加SLG或其他CFG补丁。FP8/GGUF、ControlNet、编译及第三方补丁组合尚未全面验证。

@@ -38,6 +38,12 @@ test_legacy_ui_ids_sockets_widgets_and_links_migrate_together (test_naming.Namin
 test_mixed_api_preserves_original_loader_directory_and_user_prompt (test_naming.NamingAndMigrationTests.test_mixed_api_preserves_original_loader_directory_and_user_prompt) ... ok
 test_public_assets_resolve_to_same_legacy_files_without_copying (test_naming.NamingAndMigrationTests.test_public_assets_resolve_to_same_legacy_files_without_copying) ... ok
 test_public_documentation_examples_and_filenames_have_no_research_labels (test_naming.NamingAndMigrationTests.test_public_documentation_examples_and_filenames_have_no_research_labels) ... ok
+test_cached_partial_load_is_repaired_when_manager_ignores_flag (test_reference_devices.ReferenceDeviceTests.test_cached_partial_load_is_repaired_when_manager_ignores_flag) ... Kaloscope reference encoder: completing partial load on cuda:0.
+ok
+test_cpu_loader_still_encodes_without_cuda (test_reference_devices.ReferenceDeviceTests.test_cpu_loader_still_encodes_without_cuda) ... ok
+test_offloaded_buffers_are_checked_even_when_all_parameters_are_on_gpu (test_reference_devices.ReferenceDeviceTests.test_offloaded_buffers_are_checked_even_when_all_parameters_are_on_gpu) ... Kaloscope reference encoder: completing partial load on cuda:0.
+ok
+test_partial_gpu_encoder_is_fully_loaded_before_forward (test_reference_devices.ReferenceDeviceTests.test_partial_gpu_encoder_is_fully_loaded_before_forward) ... ok
 test_amp_convolution_mismatch_retries_without_changing_shared_weights (test_reference_precision.ReferencePrecisionTests.test_amp_convolution_mismatch_retries_without_changing_shared_weights) ... ok
 test_cpu_encoding_isolated_from_outer_autocast (test_reference_precision.ReferencePrecisionTests.test_cpu_encoding_isolated_from_outer_autocast) ... ok
 test_cuda_without_native_bf16_uses_stored_precision (test_reference_precision.ReferencePrecisionTests.test_cuda_without_native_bf16_uses_stored_precision) ... ok
@@ -52,6 +58,6 @@ test_release_examples_use_independent_loader_and_standard_vae (test_standalone.S
 test_runtime_has_no_analysis_dependency_or_path_mutation (test_standalone.StandaloneTests.test_runtime_has_no_analysis_dependency_or_path_mutation) ... ok
 
 ----------------------------------------------------------------------
-Ran 52 tests in 2.106s
+Ran 56 tests in 3.054s
 
 OK

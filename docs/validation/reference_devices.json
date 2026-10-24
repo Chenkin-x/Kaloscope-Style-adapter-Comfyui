@@ -1,0 +1,53 @@
+{
+  "torch": "2.13.0+cu130",
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "comfyui_commit": "c194dd00cd42aa18d9dbf27d977bf6b85d9ea565",
+  "checkpoint_sha256": "b06d71ba6d655aae035dfb5dc4a32dde4fd0aba00bf553facedd654d8e2e5a64",
+  "partial_unload_devices": [
+    "cpu",
+    "cuda:0"
+  ],
+  "previous_release_error": "Input type (torch.cuda.FloatTensor) and weight type (torch.FloatTensor) should be the same",
+  "cases": [
+    {
+      "state": "NO_VRAM",
+      "mode": "center_crop",
+      "devices": [
+        "cuda:0"
+      ],
+      "max_abs_vs_fully_loaded": 0.0,
+      "loaded_bytes": 353806400
+    },
+    {
+      "state": "NO_VRAM",
+      "mode": "resize",
+      "devices": [
+        "cuda:0"
+      ],
+      "max_abs_vs_fully_loaded": 0.0,
+      "loaded_bytes": 353806400
+    },
+    {
+      "state": "LOW_VRAM",
+      "mode": "center_crop",
+      "devices": [
+        "cuda:0"
+      ],
+      "max_abs_vs_fully_loaded": 0.0,
+      "loaded_bytes": 353806400
+    },
+    {
+      "state": "LOW_VRAM",
+      "mode": "resize",
+      "devices": [
+        "cuda:0"
+      ],
+      "max_abs_vs_fully_loaded": 0.0,
+      "loaded_bytes": 353806400
+    }
+  ],
+  "unload_reload_bitwise_equal": true,
+  "cpu_encoding_finite": true,
+  "all_weights_still_fp32": true,
+  "scope": "Actual ComfyUI ModelPatcher partial unload and NO_VRAM/LOW_VRAM policy in an isolated Linux process; no fake convolution faults. Windows host and full generation not tested."
+}
