@@ -9,6 +9,11 @@
   ],
   "all_finite": true,
   "normal_vs_previous_max_abs": 0.0,
+  "full_image_resize_shape": [
+    2,
+    256
+  ],
+  "full_image_resize_finite": true,
   "simulated_backend_error_before_fix": "Input type (c10::BFloat16) and bias type (float) should be the same",
   "recovery_vs_explicit_fp32_max_abs": 0.0,
   "amp_failures_in_two_image_batch": 1,

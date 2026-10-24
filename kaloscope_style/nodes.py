@@ -103,15 +103,19 @@ class KaloscopeStyleAdapterLoader:
 class KaloscopeStyleEncodeReference:
     @classmethod
     def INPUT_TYPES(cls):
-        return {'required': {'reference_images': ('IMAGE',), 'model': ('KALOSCOPE_MODEL',)}}
+        return {'required': {'reference_images': ('IMAGE',), 'model': ('KALOSCOPE_MODEL',)},
+                'optional': {'resize_mode': (['center_crop', 'resize'], {
+                    'default': 'center_crop',
+                    'tooltip': 'center_crop: center crop then resize to 512×512. resize: resize the full image to 512×512 without cropping; aspect ratio may change.',
+                })}}
 
     RETURN_TYPES = ('TENSOR',)
     RETURN_NAMES = ('style_features',)
     FUNCTION = 'encode'
     CATEGORY = 'Kaloscope Adapter'
 
-    def encode(self, reference_images, model):
-        return (encode(reference_images, model),)
+    def encode(self, reference_images, model, resize_mode='center_crop'):
+        return (encode(reference_images, model, resize_mode),)
 
 
 class KaloscopeStyleBlendFeatures:

@@ -94,6 +94,13 @@ python Kaloscope-style-adapter/install_models.py --comfyui "/path/to/ComfyUI" --
 
 名称节点支持本地搜索、别名和近似拼写匹配，候选以当前风格库实际收录的画师为准。参考图提供风格条件，不是图生图的内容输入。
 
+参考图节点的 `resize_mode` 可选择：
+
+- `center_crop`（默认）：中心裁剪为正方形，再缩放到512×512，与训练预处理一致。
+- `resize`：保留完整画面，不裁剪，直接缩放到512×512；非正方形图片的宽高比例会改变。
+
+旧工作流未设置该选项时，继续使用中心裁剪。
+
 ### 起始参数
 
 | 参数 | Raw | Turbo | MOSS |

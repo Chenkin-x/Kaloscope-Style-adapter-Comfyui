@@ -1,4 +1,4 @@
-"""Reference preprocessing exactly matching the Style full-data training crop."""
+"""Reference preprocessing with the training crop or a full-image resize."""
 from contextlib import nullcontext
 import logging
 import numpy as np
@@ -36,18 +36,22 @@ def blend(features, weights=''):
     return normalized((features * (values / values.sum())[:, None]).sum(0))
 
 
-def preprocess(image):
+def preprocess(image, resize_mode='center_crop'):
+    if resize_mode not in ('center_crop', 'resize'):
+        raise ValueError('Reference resize_mode must be center_crop or resize.')
     array = (image.detach().float().cpu().clamp(0, 1) * 255).round().byte().numpy()
     im = Image.fromarray(array, mode='RGB')
-    w, h = im.size
-    n = min(w, h)
-    im = im.crop(((w-n)//2, (h-n)//2, (w+n)//2, (h+n)//2)).resize((512, 512), Image.Resampling.BICUBIC)
+    if resize_mode == 'center_crop':
+        w, h = im.size
+        n = min(w, h)
+        im = im.crop(((w-n)//2, (h-n)//2, (w+n)//2, (h+n)//2))
+    im = im.resize((512, 512), Image.Resampling.BICUBIC)
     tensor = torch.from_numpy(np.array(im)).permute(2, 0, 1).float() / 255
     return (tensor - torch.tensor([.485, .456, .406])[:, None, None]) / torch.tensor([.229, .224, .225])[:, None, None]
 
 
 @torch.inference_mode()
-def encode(images, bundle):
+def encode(images, bundle, resize_mode='center_crop'):
     model = bundle['model']
     if not hasattr(model, 'extract_tensor') or getattr(model, 'projector', None) is None or model.projector[-1].out_features != 256:
         raise ValueError('Load the training-matched DINOv3 artist encoder with a 256-dimensional projector.')
@@ -65,7 +69,7 @@ def encode(images, bundle):
         use_amp = device.type == 'cuda' and torch.cuda.is_bf16_supported(including_emulation=False)
         for image in images:
             # Shared analysis encoders may already store FP16/BF16 parameters.
-            pixels = preprocess(image)[None].to(device=device, dtype=dtype)
+            pixels = preprocess(image, resize_mode)[None].to(device=device, dtype=dtype)
             try:
                 # Preserve training's BF16 path on working backends.
                 with torch.autocast(device.type, dtype=torch.bfloat16, enabled=use_amp):
