@@ -38,12 +38,17 @@ test_legacy_ui_ids_sockets_widgets_and_links_migrate_together (test_naming.Namin
 test_mixed_api_preserves_original_loader_directory_and_user_prompt (test_naming.NamingAndMigrationTests.test_mixed_api_preserves_original_loader_directory_and_user_prompt) ... ok
 test_public_assets_resolve_to_same_legacy_files_without_copying (test_naming.NamingAndMigrationTests.test_public_assets_resolve_to_same_legacy_files_without_copying) ... ok
 test_public_documentation_examples_and_filenames_have_no_research_labels (test_naming.NamingAndMigrationTests.test_public_documentation_examples_and_filenames_have_no_research_labels) ... ok
+test_amp_convolution_mismatch_retries_without_changing_shared_weights (test_reference_precision.ReferencePrecisionTests.test_amp_convolution_mismatch_retries_without_changing_shared_weights) ... ok
+test_cpu_encoding_isolated_from_outer_autocast (test_reference_precision.ReferencePrecisionTests.test_cpu_encoding_isolated_from_outer_autocast) ... ok
+test_cuda_without_native_bf16_uses_stored_precision (test_reference_precision.ReferencePrecisionTests.test_cuda_without_native_bf16_uses_stored_precision) ... ok
+test_shared_low_precision_encoder_keeps_weights_and_aligns_input (test_reference_precision.ReferencePrecisionTests.test_shared_low_precision_encoder_keeps_weights_and_aligns_input) ... ok
+test_unrelated_cuda_errors_are_not_retried (test_reference_precision.ReferencePrecisionTests.test_unrelated_cuda_errors_are_not_retried) ... ok
 test_migrate_style_only_api_preserves_mixed_analysis_graph (test_standalone.StandaloneTests.test_migrate_style_only_api_preserves_mixed_analysis_graph) ... ok
 test_package_coexists_without_global_aliases_or_eager_dino_import (test_standalone.StandaloneTests.test_package_coexists_without_global_aliases_or_eager_dino_import) ... ok
 test_release_examples_use_independent_loader_and_standard_vae (test_standalone.StandaloneTests.test_release_examples_use_independent_loader_and_standard_vae) ... ok
 test_runtime_has_no_analysis_dependency_or_path_mutation (test_standalone.StandaloneTests.test_runtime_has_no_analysis_dependency_or_path_mutation) ... ok
 
 ----------------------------------------------------------------------
-Ran 44 tests in 2.393s
+Ran 49 tests in 2.916s
 
 OK

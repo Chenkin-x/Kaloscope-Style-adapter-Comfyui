@@ -1,0 +1,17 @@
+{
+  "torch": "2.13.0+cu130",
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "checkpoint_sha256": "b06d71ba6d655aae035dfb5dc4a32dde4fd0aba00bf553facedd654d8e2e5a64",
+  "images": "Released reference.jpg resized to 128x96 and horizontally flipped; node crops to 512x512",
+  "shape": [
+    2,
+    256
+  ],
+  "all_finite": true,
+  "normal_vs_previous_max_abs": 0.0,
+  "simulated_backend_error_before_fix": "Input type (c10::BFloat16) and bias type (float) should be the same",
+  "recovery_vs_explicit_fp32_max_abs": 0.0,
+  "amp_failures_in_two_image_batch": 1,
+  "weights_remain_fp32": true,
+  "scope": "Real published encoder GPU inference; AMP fault injected at actual patch convolution. Windows user environment and full image generation not tested."
+}

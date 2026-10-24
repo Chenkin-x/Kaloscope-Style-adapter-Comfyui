@@ -1,8 +1,12 @@
 """Reference preprocessing exactly matching the Style full-data training crop."""
+from contextlib import nullcontext
+import logging
 import numpy as np
 from PIL import Image
 import torch
 from torch.nn import functional as F
+
+logger = logging.getLogger(__name__)
 
 
 def normalized(features):
@@ -52,12 +56,32 @@ def encode(images, bundle):
     if bundle.get('patcher') is not None:
         from comfy import model_management
         model_management.load_models_gpu([bundle['patcher']])
-    device = next(model.parameters()).device
+    parameter = next(model.parameters())
+    device, dtype = parameter.device, parameter.dtype
+    # Query the encoder's GPU, which may differ from the current CUDA device.
+    device_context = torch.cuda.device(device) if device.type == 'cuda' else nullcontext()
     result = []
-    for image in images:
-        pixels = preprocess(image)[None].to(device)
-        # Training used BF16 autocast; keep the model's stored weights in FP32.
-        context = torch.autocast('cuda', dtype=torch.bfloat16) if device.type == 'cuda' else torch.autocast('cpu', enabled=False)
-        with context:
-            result.append(model.extract_tensor(pixels, 'projector').float().cpu())
+    with device_context:
+        use_amp = device.type == 'cuda' and torch.cuda.is_bf16_supported(including_emulation=False)
+        for image in images:
+            # Shared analysis encoders may already store FP16/BF16 parameters.
+            pixels = preprocess(image)[None].to(device=device, dtype=dtype)
+            try:
+                # Preserve training's BF16 path on working backends.
+                with torch.autocast(device.type, dtype=torch.bfloat16, enabled=use_amp):
+                    projection = model.extract_tensor(pixels, 'projector')
+            except RuntimeError as exc:
+                message = str(exc).lower()
+                mismatch = ('input type' in message and 'bias type' in message and 'should be the same' in message
+                            or 'mat1 and mat2 must have the same dtype' in message)
+                if not use_amp or not mismatch:
+                    raise
+                logger.warning('Kaloscope reference encoder: BF16 autocast dtype mismatch; '
+                               'retrying without autocast in stored precision (%s).', dtype)
+                # No model.float()/bfloat16(): the analysis node shares this model.
+                # Disable even an outer AMP scope, also for the remaining images.
+                use_amp = False
+                with torch.autocast(device.type, enabled=False):
+                    projection = model.extract_tensor(pixels, 'projector')
+            result.append(projection.float().cpu())
     return normalized(torch.cat(result))
