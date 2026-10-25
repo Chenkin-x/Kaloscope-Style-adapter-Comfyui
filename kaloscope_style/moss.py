@@ -39,14 +39,14 @@ class KaloscopeMOSSBaseLoader:
 class KaloscopeMOSSSigmas:
     @classmethod
     def INPUT_TYPES(cls):
-        return {'required': {'steps': ('INT', {'default': 50, 'min': 1, 'max': 1000}),
+        return {'required': {'steps': ('INT', {'default': 25, 'min': 1, 'max': 1000}),
                              'shift': ('FLOAT', {'default': 5., 'min': .01, 'max': 100.})}}
 
     RETURN_TYPES = ('SIGMAS',)
     FUNCTION = 'schedule'
     CATEGORY = 'Kaloscope Adapter/MOSS'
 
-    def schedule(self, steps=50, shift=5.):
+    def schedule(self, steps=25, shift=5.):
         if not 1 <= steps <= 1000 or not math.isfinite(shift) or shift <= 0:
             raise ValueError('Require 1–1000 steps and a finite positive shift.')
         # MOSSImageScheduler: shifted inference grid snapped to training_shift=1.

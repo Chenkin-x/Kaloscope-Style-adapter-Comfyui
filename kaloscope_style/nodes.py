@@ -96,7 +96,7 @@ class KaloscopeStyleAdapterLoader:
         bundle['patcher'] = ModelPatcher(bundle['adapter'], load_device=model_management.get_torch_device(),
                                          offload_device=model_management.unet_offload_device())
         info = dict(step=bundle['step'], checkpoint=checkpoint, feature_dim=256, backend=bundle['backend'], injection_blocks=len(bundle['config']['injection_indices']),
-                    banks=4, parameters=sum(p.numel() for p in bundle['adapter'].parameters()))
+                    banks=bundle['config']['adapter_banks'], parameters=sum(p.numel() for p in bundle['adapter'].parameters()))
         return bundle, json.dumps(info, ensure_ascii=False)
 
 

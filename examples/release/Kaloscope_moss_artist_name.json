@@ -307,7 +307,7 @@
         "Node name for S&R": "KaloscopeMOSSSigmas"
       },
       "widgets_values": [
-        50,
+        25,
         5.0
       ],
       "title": "MOSS训练评估时间表 / shift=5"

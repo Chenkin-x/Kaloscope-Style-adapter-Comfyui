@@ -106,7 +106,7 @@ python Kaloscope-style-adapter/install_models.py --comfyui "/path/to/ComfyUI" --
 | 参数 | Raw | Turbo | MOSS |
 | --- | ---: | ---: | ---: |
 | 采样器 | Euler | Euler | Euler |
-| 步数 | 25 | 8 | 50 |
+| 步数 | 25 | 8 | 25 |
 | 文本 CFG | 2 | 1 | 3 |
 | 风格 CFG | 3.5 | 1 | 6 |
 | Adapter strength | 1 | 1 | 1 |
@@ -141,7 +141,7 @@ Raw/Turbo 使用单帧 `EmptyHunyuanLatentVideo`；MOSS 使用 `EmptyFlux2Latent
 - 风格强度过高可能损害人体和构图。参考图、混合风格和不同种子的效果存在差异。
 - MOSS使用官方加载器的默认模型采样设置；不要额外添加 `ModelSamplingSD3`。Apply Style已包含负分支skip22，不要重复叠加SLG或其他CFG补丁。FP8/GGUF、ControlNet、编译及第三方补丁组合尚未全面验证。
 
-旧UI工作流加载时会自动迁移。旧API工作流、合并扩展版安装及模型目录兼容详见[迁移指南](docs/MIGRATION_ZH.md)。MOSS使用细节见 [MOSS说明](README_MOSS_ZH.md)。
+旧UI工作流加载时会自动迁移。旧API工作流、合并扩展版安装及模型目录兼容详见[迁移指南](docs/MIGRATION_ZH.md)。MOSS使用细节见 [MOSS说明](README_MOSS_ZH.md)。 MOSS adapter支持dim256的B4/B8共享组，B8权重需要更新节点包后重启ComfyUI。
 
 ## 开发
 

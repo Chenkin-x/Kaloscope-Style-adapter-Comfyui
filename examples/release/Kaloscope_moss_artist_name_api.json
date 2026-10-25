@@ -90,7 +90,7 @@
   "8": {
     "class_type": "KaloscopeMOSSSigmas",
     "inputs": {
-      "steps": 50,
+      "steps": 25,
       "shift": 5.0
     },
     "_meta": {

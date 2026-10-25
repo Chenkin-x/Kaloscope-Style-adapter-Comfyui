@@ -17,7 +17,7 @@
 | 参数 | 比较起点 |
 | --- | --- |
 | 分辨率 | 512×512，宽高64对齐 |
-| 采样 | Euler，50步 |
+| 采样 | Euler，25步 |
 | 时间表 | MOSS Sampling Schedule，shift=5 |
 | 文本CFG / 风格CFG | 3 / 6 |
 | adapter强度 | 1 |
@@ -35,6 +35,8 @@ Apply Style内置负分支skip22和独立风格CFG，不要再叠加SLG或另一
 python scripts/export_adapter.py checkpoint.pt Kaloscope-MOSS.safetensors
 ```
 
-权重读取严格检查架构、42层映射与有限值。既有权重无需转换；代码命名更新不改变模型数值。
+加载器支持 dim256 的 B4（4组）与 B8（8组）MOSS adapter，按训练映射 `floor(layer_index * banks / 42)` 注入全部42层，并严格检查架构、层映射与有限值。导出保留全部权重张量。
+
+使用 B8 权重前，请更新本节点包并重启 ComfyUI，再在 Adapter Loader 中选择对应文件。节点会显示实际共享组数；旧 B4 MOSS 和 Krea2 权重仍可加载。
 
 旧HF目录加载节点仅用于兼容已有工作流，不出现在新节点菜单中。使用原生加载请导入本仓库当前示例，并选择对应的单文件模型。
