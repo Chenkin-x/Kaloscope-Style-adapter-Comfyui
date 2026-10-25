@@ -26,6 +26,28 @@
 
 名称与融合示例来自 Turbo，参考图示例包含 Raw 和 Turbo。
 
+## MOSS 加训版 · 2026-10-25
+
+最新发布 **Kaloscope MOSS B8 / D256 / step10000**：8 个共享适配器 bank、256 维风格特征、约 1331 万参数。它是搭配 **MOSS-Image-Base** 使用的风格适配器，需要底模、文本编码器与 VAE，不能作为独立基础模型或普通 LoRA 加载。
+
+[下载最新 MOSS 权重](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Kaloscope-MOSS-B8-D256-step10000.safetensors?download=true) · [更新说明](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/updates/2026-10-25-moss-b8-step10000.md) · [新版 UI / API 工作流](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/tree/main/workflows/moss-b8-step10000) · [完整三部分图墙](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/images/moss-step10000/moss-image-wall.jpg)
+
+### MOSS · 画师名称生成
+
+![MOSS 画师名称生成](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/images/moss-step10000/moss-artist-name.jpg)
+
+### MOSS · 多画师融合
+
+![MOSS 多画师融合](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/images/moss-step10000/moss-artist-mix.jpg)
+
+### MOSS · 参考图生成
+
+![MOSS 参考图生成](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/images/moss-step10000/moss-reference.jpg)
+
+上述图墙由 27 张新模型输出和 5 张参考图直接拼接。样图使用本地 INT8 ConvRot 底模与文本编码器，1024×1024、Euler 25 步、文本 CFG 3、风格 CFG 6、adapter strength 1、shift 5。新版工作流默认选择公开可下载的 BF16 文件，结果可能不同。
+
+使用前请更新本节点包至支持 **MOSS 8-bank** 的版本（本次核对提交 `4af232763bf43ff7bffa4775726b3231734e5415`），并重启 ComfyUI。旧版 MOSS 权重保留，已安装的匹配 `artist-v1` 风格库和参考编码器可继续复用。
+
 ## 安装
 
 在 ComfyUI 的 `custom_nodes` 目录中克隆仓库：
@@ -46,7 +68,8 @@ python -m pip install -r Kaloscope-Style-adapter-Comfyui/requirements.txt
 | --- | --- | --- | --- |
 | Krea Kaloscope Raw | Krea-2-Raw | [权重](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Krea-Kaloscope-Raw.safetensors?download=true) | [说明](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/raw/README.md) |
 | Krea Kaloscope Turbo | Krea-2-Turbo BF16 | [权重](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Krea-Kaloscope-Turbo.safetensors?download=true) | [说明](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/turbo/README.md) |
-| Kaloscope MOSS | MOSS-Image-Base | [权重](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Kaloscope-MOSS.safetensors?download=true) | [说明](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/moss/README.md) |
+| **Kaloscope MOSS B8 · step10000（最新）** | MOSS-Image-Base | [权重](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Kaloscope-MOSS-B8-D256-step10000.safetensors?download=true) | [说明](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/moss/README.md) |
+| Kaloscope MOSS · step8500（旧版） | MOSS-Image-Base | [权重](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/models/Kaloscope-MOSS.safetensors?download=true) | [旧版说明](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/blob/main/model_cards/moss-step8500/README.md) |
 
 名称与名称融合需要 [artist-v1 风格库](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/resolve/main/style-bank/artist-v1.safetensors?download=true)。参考图需要 [artist-v1 编码器](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/tree/main/encoder/artist-v1)目录中的配置、权重和许可。
 
@@ -55,7 +78,7 @@ ComfyUI/models/
 ├── kaloscope_adapters/
 │   ├── Krea-Kaloscope-Raw.safetensors
 │   ├── Krea-Kaloscope-Turbo.safetensors
-│   └── Kaloscope-MOSS.safetensors
+│   └── Kaloscope-MOSS-B8-D256-step10000.safetensors
 ├── kaloscope_style_banks/
 │   └── artist-v1.safetensors
 └── kaloscope/
@@ -79,11 +102,13 @@ hf download heathcliff01/Kaloscope-style-adapter --local-dir Kaloscope-style-ada
 python Kaloscope-style-adapter/install_models.py --comfyui "/path/to/ComfyUI" --variant turbo --with-encoder
 ```
 
-`--variant` 支持 `raw`、`turbo`、`moss` 和 `all`；已有编码器或仅使用名称入口时可省略 `--with-encoder`。
+`--variant` 支持 `raw`、`turbo`、`moss` 和 `all`；其中 `moss` 默认安装最新 B8 / step10000 权重。已有编码器或仅使用名称入口时可省略 `--with-encoder`。
+
+体验新版 MOSS 时，将上述命令中的 `--variant turbo` 改为 `--variant moss`。
 
 ## 使用
 
-从 [examples/release](examples/release) 导入工作流。不带 `_api` 后缀的 JSON 可直接拖入 ComfyUI；带 `_api` 的文件用于 HTTP 队列。
+从 [examples/release](examples/release) 导入工作流。**新版 MOSS B8 请优先使用 Hugging Face 上的 [step10000 专用工作流](https://huggingface.co/heathcliff01/Kaloscope-style-adapter/tree/main/workflows/moss-b8-step10000)**，包含画师名称、多画师融合和参考图三套 UI / API 示例，并已选中新权重。不带 `_api` 后缀的 JSON 可直接拖入 ComfyUI；带 `_api` 的文件用于 HTTP 队列。参考图示例可上传同目录的 `kaloscope_moss_reference.png`，或使用自己的图片。
 
 1. 选择对应底模、文本编码器、VAE 和 adapter。
 2. 选择风格来源：
