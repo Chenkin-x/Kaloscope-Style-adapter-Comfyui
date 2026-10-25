@@ -60,8 +60,9 @@ class KaloscopeMOSSSigmas:
 
 
 class MOSSAfterBlock:
-    def __init__(self, adapter, features, bank, strength):
+    def __init__(self, adapter, features, bank, strength, preserve_input_buffer=False):
         self.adapter, self.features, self.bank, self.strength = adapter, features, bank, strength
+        self.preserve_input_buffer = preserve_input_buffer
 
     def __call__(self, args, extra):
         result = extra['original_block'](args)
@@ -73,7 +74,14 @@ class MOSSAfterBlock:
         with precision_context(x):
             style = self.adapter.encode(self.features.to(device=x.device, dtype=torch.float32))
             delta = self.adapter.residual(x[:, :n], style.expand(x.shape[0], -1, -1), self.bank)
-        return {**result, 'img': torch.cat((x[:, :n] + (delta * self.strength).to(x.dtype), x[:, n:]), dim=1)}
+        scaled_delta = (delta * self.strength).to(x.dtype)
+        if self.preserve_input_buffer and not torch.is_grad_enabled():
+            # Native MOSS allocates x before its AIMDO graph and updates it in place.
+            # Replacing it with a tensor allocated inside a block leaves that tensor
+            # alive across the block's malloc scope and breaks the memory compiler.
+            x[:, :n].add_(scaled_delta)
+            return result
+        return {**result, 'img': torch.cat((x[:, :n] + scaled_delta, x[:, n:]), dim=1)}
 
 
 def skip_block(args, extra):
@@ -137,7 +145,8 @@ def apply_moss(model, bundle, features, style_guidance, adapter_strength):
     if enabled:
         features = blend(features)
         for index, bank in zip(bundle['config']['injection_indices'], bundle['config']['injection_slots']):
-            clone.set_model_patch_replace(MOSSAfterBlock(bundle['adapter'], features, bank, adapter_strength),
+            clone.set_model_patch_replace(MOSSAfterBlock(bundle['adapter'], features, bank, adapter_strength,
+                                                         preserve_input_buffer=native_core),
                                           'dit', 'single_block', index)
         clone.set_additional_models('kaloscope_style', [bundle['patcher']])
     clone.set_model_sampler_calc_cond_batch_function(moss_cond_batch)
